@@ -126,8 +126,57 @@ function audio_menu() {
     'access arguments' => array(2),
     'type' => MENU_CALLBACK,
   );
+  $items['audio/progress'] = array(
+    'page callback' => 'audio_progress',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['audio/ahah'] = array(
+    'page callback' => 'audio_ahah',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
 
   return $items;
+}
+
+/**
+ * Implementation of audio_ahah callback
+ */
+function audio_ahah() {
+  $cached_form_state = array();
+  if (!($cached_form = form_get_cache($_POST['form_build_id'], $cached_form_state))) {
+    $output = theme('status_messages');
+    print drupal_to_js(array('status' => TRUE, 'data' => $output));
+  }
+
+  $form_state = array('values' => $_POST);
+  form_set_cache('audio_node_form', $cached_form, $form_state);
+  $form = form_builder('audio_node_form', $cached_form, $form_state);
+
+  print drupal_to_js(array('status' => TRUE, 'data' => $message ));
+  exit();
+}
+
+/**
+ * Implementation audio_progress callback
+ */
+function audio_progress($key) {
+  $progress = array(
+    'message' => t('Starting upload...'),
+    'percentage' => -1,
+  );
+
+  $status = uploadprogress_get_info($key);
+
+  if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
+    $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+    $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+  }
+
+  drupal_json($progress);
 }
 
 /**
@@ -730,6 +779,14 @@ function audio_form(&$node, &$form_state) {
   }
 
   $extensions = implode(', ', array_filter(explode(' ', variable_get('audio_allowed_extensions', 'mp3 wav ogg'))));
+
+  $key = md5(mt_rand());
+
+  $form['upload']['UPLOAD_IDENTIFIER'] = array(
+    '#type' =>'hidden',
+    '#value' => $key,
+  );
+
   $form['audio']['audio_upload'] = array(
     '#tree' => FALSE,
     '#type' => 'file',
@@ -738,6 +795,29 @@ function audio_form(&$node, &$form_state) {
     '#description' => t('Click "Browse..." to select an audio file to upload. Only files with the following extensions are allowed: %allowed-extensions.', array('%allowed-extensions' => $extensions)) .'<br />'
       . t('<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize.', array('%maxsize' => format_size(file_upload_max_size()))),
   );
+
+  //kill radcliffe 
+  $form['audio']['attach'] = array(
+    '#type' => 'submit',
+    '#value' => t('Upload'),
+    '#name' => 'attach',
+    '#prefix' => '<div id="edit-audio-attach-wrapper">',
+    '#suffix' => '</div>',
+    '#ahah' => array(
+      'path' => 'audio/ahah',
+      'wrapper' => 'edit-audio-attach-wrapper',
+      'method' => 'append',
+      'progress' => array(
+//        'url' => 'audio/progress/' . $key,
+        'path' => 'audio/progress/' . $key,
+        'type' => 'bar',
+        'message' => t('Please wait...'),
+        'interval' => 300,
+      ),
+    ),
+    '#submit' => array('node_form_submit_build_node'),
+  );
+
   $form['audio']['downloadable'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow file downloads.'),
