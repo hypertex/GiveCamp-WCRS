@@ -1,0 +1,58 @@
+<?php
+
+// $Id: audio_import.module,v 1.11 2009/05/10 19:15:23 drewish Exp $
+
+/**
+ * Implementation of hook_help().
+ */
+function audio_import_help($section, $arg) {
+  switch ($section) {
+    case 'admin/content/audio_import':
+      return '<p>'. t("Import multiple audio files and save them as audio nodes. The files will be moved from their location into the audio module's files directory. ") .'</p>'
+        .'<p>'. t("Searching for files ending with %extensions in %dirpath directory.", array('%dirpath' => realpath(variable_get('audio_import_path', '')), '%extensions' => variable_get('audio_allowed_extensions', 'mp3 wav ogg'))) .'</p>';
+    case 'admin/help#audio':
+      return '<p>'. t("The audio_import module allows users with 'administer audio' permission to import audio files and create audio nodes from them. ") .'</p>';
+    case 'admin/settings/audio_import':
+      return t("Configure the audio import module's settings.");
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function audio_import_menu() {
+  $items = array();
+
+  $items['admin/content/audio_import'] = array(
+    'title' => 'Audio import',
+    'description' => 'Import audio from the filesystem.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_import_form'),
+    'file' => 'audio_import.pages.inc',
+    'access arguments' => array('administer audio'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/audio_import'] = array(
+    'title' => 'Audio import settings',
+    'description' => 'Change settings for the Audio Import module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_import_admin_settings'),
+    'file' => 'audio_import.admin.inc',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function audio_import_theme() {
+  return array(
+    'audio_import_form' => array(
+      'arguments' => array('form'),
+      'file' => 'audio_import.admin.inc',
+    ),
+  );
+}

@@ -1,0 +1,441 @@
+<?php
+// $Id: audio.install,v 1.24 2008/12/21 23:21:18 drewish Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function audio_install() {
+  drupal_install_schema('audio');
+  _audio_add_default_perms();
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function audio_uninstall() {
+  drupal_uninstall_schema('audio');
+  variable_del('audio_allowed_extensions');
+  variable_del('audio_block_random_n');
+  variable_del('audio_default_downloadable');
+  variable_del('audio_default_title_format');
+  variable_del('audio_player_mp3');
+  variable_del('audio_player_wav');
+  variable_del('audio_show_form_title');
+  variable_del('audio_tag_settings');
+  variable_del('audio_teaser_format');
+}
+
+function audio_schema() {
+  $schema['audio'] = array(
+    'description' => t('Main audio table.'),
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'fid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => t('Primary Key: The {files}.fid.'),
+      ),
+      'title_format' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'default' => '',
+      ),
+      'play_count' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'download_count' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'downloadable' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'format' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'sample_rate' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'channel_mode' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'bitrate' => array(
+        'type' => 'float',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'bitrate_mode' => array(
+        'type' => 'varchar',
+        'length' => 4,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'playtime' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vid'),
+    'indexes' => array(
+      'audio_fid' => array('fid'),
+    ),
+  );
+  $schema['audio_metadata'] = array(
+    'description' => t('Extended data about audio files.'),
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'tag' => array(
+        'type' => 'varchar',
+        'length' => 45,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'value' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'clean' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vid', 'tag', 'value'),
+    'indexes' => array(
+      'audio_metadata_tags' => array('clean'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ * Add permission to download and view audio to the anonymous and authenticated
+ * roles by default.
+ */
+function _audio_add_default_perms() {
+  $newperms = array('download audio', 'play audio', 'view download stats');
+  $rids = array(DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID);
+  foreach ($rids as $rid) {
+    $result = db_result(db_query("SELECT perm FROM {permission} WHERE rid = %d", $rid));
+    if ($result) {
+      $perms = explode(', ', $result);
+      foreach ($newperms as $newperm) {
+        if (!in_array($newperm, $perms)) {
+          $perms[] = $newperm;
+        }
+      }
+      db_query("UPDATE {permission} SET perm = '%s' WHERE rid = %d", implode(', ', $perms), $rid);
+    }
+    else {
+      db_query("INSERT INTO {permission} (rid, perm) VALUES (%d, '%s')", $rid, implode(', ', $newperms));
+    }
+  }
+}
+
+/**
+ * Implementation of hook_update_last_removed().
+ */
+function audio_update_last_removed() {
+  return 111;
+}
+
+/**
+ * Drop the audio_file.origname field.
+ *
+ * This is the first update for the 5.2 branch, using the update naming
+ * convention described in: http://drupal.org/node/114774#update-n
+ */
+function audio_update_5200() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {audio_file} SET filename = origname");
+  db_drop_field($ret, 'audio_file', 'origname');
+  return $ret;
+}
+
+/**
+ * Use the token module for title and teasers.
+ */
+function audio_update_5201() {
+  $ret = array();
+
+  // Build an array of conversions. First the hard coded values...
+  $tokens = array(
+    '!filelength' => '[audio-file-length]',
+    '!fileformat' => '[audio-file-format]',
+    '!player' => '[audio-player]',
+    '!filename' => '[audio-filename]',
+  );
+  // ...then the tags.
+  foreach (audio_get_tags_allowed() as $tag) {
+    $tokens['!'. $tag] = '[audio-tag-'. strtr($tag, '_', '-') .']';
+  }
+
+  // Gather a list of all the different title formats and then replace them
+  // with the new token based equivalents.
+  $result = db_query('SELECT DISTINCT title_format FROM {audio}');
+  while ($o = db_fetch_object($result)) {
+    $new_value = strtr($o->title_format, $tokens);
+    db_query("UPDATE {audio} SET title_format = '%s' WHERE title_format = '%s'", $new_value, $o->title_format);
+  }
+
+  // Update the default title and teaser formats.
+  foreach (array('audio_default_title_format', 'audio_teaser_format') as $variable) {
+    if ($old_value = variable_get($variable, FALSE)) {
+      $new_value = strtr($old_value, $tokens);
+      variable_set($variable, $new_value);
+    }
+  }
+
+  // Let them know if they don't have token installed.
+  if (!module_exists('token')) {
+    drupal_set_message(t('The audio module requires that the <a href="http://drupal.org/project/token">token module</a> be installed. You should install it as soon as possible.'));
+  }
+
+  return $ret;
+}
+
+/**
+ * Move the fields from {audio_file} to {audio}. Rename the file fields
+ * in preparation for having remote_* fields.
+ */
+function audio_update_5202() {
+  $ret = array();
+  db_change_field($ret, 'audio', 'fileformat', 'file_format',
+    array(
+      'type' => 'varchar',
+      'length' => 10,
+      'not null' => TRUE,
+      'default' => '',
+    )
+  );
+  db_add_field($ret, 'audio', 'file_mime',
+    array(
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+    )
+  );
+  db_add_field($ret, 'audio', 'file_name',
+    array(
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+    )
+  );
+  db_add_field($ret, 'audio', 'file_path',
+    array(
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+    )
+  );
+  db_add_field($ret, 'audio', 'file_size',
+    array(
+      'type' => 'int',
+      'size' => 'medium',
+      'not null' => TRUE,
+      'default' => 0,
+    )
+  );
+  db_add_field($ret, 'audio', 'remote_size',
+    array(
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+    )
+  );
+  db_add_field($ret, 'audio', 'remote_size',
+    array(
+      'type' => 'int',
+      'size' => 'medium',
+      'not null' => TRUE,
+      'default' => 0,
+    )
+  );
+  $ret[] = update_sql("UPDATE {audio} a INNER JOIN {audio_file} af ON a.vid = af.vid SET a.file_name = af.filename, a.file_path = af.filepath, a.file_mime = af.filemime, a.file_size = af.filesize");
+  db_drop_table($ret, 'audio_file');
+
+  // Build an array of renamed tokens.
+  $tokens = array(
+    '[audio-file-format]' => '[audio-format]', // Work around name conflicts.
+    '[audio-file-length]' => '[audio-length]',
+    '[audio-filename]' => '[audio-file-name]',
+    '[audio-filepath]' => '[audio-file-path]',
+    '[audio-filemime]' => '[audio-file-mime]',
+    '[audio-filesize]' => '[audio-file-size]',
+  );
+
+  // Gather a list of all the different title formats and then replace them
+  // with the new token based equivalents.
+  $result = db_query('SELECT DISTINCT title_format FROM {audio}');
+  while ($o = db_fetch_object($result)) {
+    $new_value = strtr($o->title_format, $tokens);
+    if ($new_value != $o->title_format) {
+      db_query("UPDATE {audio} SET title_format = '%s' WHERE title_format = '%s'", $new_value, $o->title_format);
+    }
+  }
+
+  // Update the default title and teaser formats.
+  foreach (array('audio_default_title_format', 'audio_teaser_format') as $variable) {
+    if ($old_value = variable_get($variable, FALSE)) {
+      variable_set($variable, strtr($old_value, $tokens));
+    }
+  }
+
+  return $ret;
+}
+
+
+/**
+ * Now that we've got raw tokens we need to update the existing audio nodes to
+ * update the title_format and replace the existing audio-tag-* tokens with the
+ * new audio-tag-*-raw tokens.
+ */
+function audio_update_5203() {
+  $ret = array();
+
+  // Build an array of tokens to rename.
+  $tokens = array();
+  foreach (audio_get_tags_allowed() as $tag) {
+    $name = strtr($tag, '_', '-');
+    $tokens["[audio-tag-$name]"] =  "[audio-tag-$name-raw]";
+  }
+
+  // Gather a list of all the different title formats and then replace them
+  // with the new token based equivalents.
+  $result = db_query('SELECT DISTINCT title_format FROM {audio}');
+  while ($o = db_fetch_object($result)) {
+    $new_value = strtr($o->title_format, $tokens);
+    if ($new_value != $o->title_format) {
+      db_query("UPDATE {audio} SET title_format = '%s' WHERE title_format = '%s'", $new_value, $o->title_format);
+      $ret[] = array('success' => TRUE, 'query' => check_plain("Updated audio node titles from '$o->title_format' to '$new_value'."));
+    }
+  }
+
+  // Update the default title format.
+  if ($old_value = variable_get('audio_default_title_format', FALSE)) {
+    $new_value = strtr($old_value, $tokens);
+    if ($old_value != $new_value) {
+      variable_set('audio_default_title_format', $new_value);
+      $ret[] = array('success' => TRUE, 'query' => check_plain("Updated the default audio node title from '$old_value' to '$new_value'."));
+    }
+  }
+
+  return $ret;
+}
+
+/**
+ * Use unsigned normal int for vid, nid and file_size.
+ */
+function audio_update_6000() {
+  $ret = array();
+  db_drop_primary_key($ret, 'audio');
+  db_change_field($ret, 'audio', 'vid', 'vid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0), array('primary key' => array('vid')));
+  db_change_field($ret, 'audio', 'nid', 'nid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_change_field($ret, 'audio', 'file_size', 'file_size', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  return $ret;
+}
+
+/**
+ * Ensure previous update was applied; use unsigned normal int for audio_metadata vid.
+ */
+function audio_update_6001() {
+  $ret = array();
+  db_drop_primary_key($ret, 'audio');
+  db_change_field($ret, 'audio', 'vid', 'vid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0), array('primary key' => array('vid')));
+  db_drop_primary_key($ret, 'audio_metadata');
+  db_change_field($ret, 'audio_metadata', 'vid', 'vid', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_add_primary_key($ret, 'audio_metadata', array('vid', 'tag', 'value'));
+  return $ret;
+}
+
+/**
+ * Move the audio files from the {audio} table to the {files} table and then
+ * remove the columns.
+ *
+ * @return unknown
+ */
+function audio_update_6002() {
+  $ret = array();
+
+  // Create the fid field so we've got a place to store the file id's as we
+  // migrate them.
+  $fid_field = array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'description' => t('Primary Key: The {files}.fid.'),
+  );
+  db_add_field($ret, 'audio', 'fid', $fid_field);
+  db_add_index($ret, 'audio', 'audio_fid', array('fid'));
+
+  // Load all the distinct filepaths, note that this may update multiple audio
+  // rows at once.
+  $result = db_query("SELECT DISTINCT file_path FROM {audio} WHERE fid IS NULL OR fid = 0");
+  while ($file = db_fetch_object($result)) {
+    // Then move the data into the files table.
+    db_query("INSERT INTO {files} (uid, filename, filepath, filemime, filesize, status, timestamp) SELECT n.uid, '%s', ai.file_path, ai.file_mime, ai.file_size, 1, n.created AS timestamp FROM {node} n INNER JOIN {audio} ai ON n.vid = ai.vid WHERE ai.file_path = '%s' LIMIT 1", array(basename($file->file_path), $file->file_path));
+    db_query("UPDATE {audio} SET fid = %d WHERE file_path = '%s'", db_last_insert_id('files', 'fid'), $file->file_path);
+  }
+
+  // Drop the old fields.
+  db_drop_field($ret, 'audio', 'file_mime');
+  db_drop_field($ret, 'audio', 'file_name');
+  db_drop_field($ret, 'audio', 'file_path');
+  db_drop_field($ret, 'audio', 'file_size');
+
+  // Rename the file_format field to format.
+  $format_field = array(
+    'type' => 'varchar',
+    'length' => 10,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_change_field($ret, 'audio', 'file_format', 'format', $format_field);
+
+  return $ret;
+}

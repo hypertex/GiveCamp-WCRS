@@ -1,0 +1,8 @@
+; $Id: audio_attach.info,v 1.6 2008/12/08 21:46:32 drewish Exp $
+name = Audio Attach
+description = Allows audio files to be attached to any node type.
+package = "Audio"
+core = 6.x
+dependencies[] = audio
+dependencies[] = content
+dependencies[] = nodereference

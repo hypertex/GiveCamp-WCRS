@@ -1,0 +1,6 @@
+; $Id: audio_images.info,v 1.1 2008/05/26 17:26:13 drewish Exp $
+name = Audio Images
+description = Adds the ability to attach album art to audio nodes.
+package = Audio
+core = 6.x
+dependencies[] = audio

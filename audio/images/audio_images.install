@@ -1,0 +1,109 @@
+<?php
+// $Id: audio_images.install,v 1.4 2008/12/21 23:21:18 drewish Exp $
+
+function audio_images_install() {
+  drupal_install_schema('audio_images');
+}
+
+function audio_images_uninstall() {
+  drupal_uninstall_schema('audio_images');
+  variable_del('audio_default_image_type');
+  variable_del('audio_image_size');
+  // TODO should we delete the image files too?
+}
+
+/**
+ * Install the initial schema.
+ */
+function audio_images_schema() {
+  $schema['audio_image'] = array(
+    'description' => t('Associates an image (such as album artwork) with an audio file.'),
+    'fields' => array(
+      'fid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => t('Primary Key: The {files}.fid.'),
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+      ),
+      'pictype' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'width' => array(
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'height' => array(
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('vid', 'fid'),
+    'indexes' => array(
+      'audio_image_fid' => array('fid'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_update_last_removed().
+ */
+function audio_images_update_last_removed() {
+  return 2;
+}
+
+/**
+ * Move the majority of our data into the {files} table.
+ */
+function audio_images_update_6000() {
+  $ret = array();
+  $fid_field = array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'description' => t('Primary Key: The {files}.fid.'),
+  );
+  db_add_field($ret, 'audio_image', 'fid', $fid_field);
+  db_add_index($ret, 'audio_image', 'audio_image_fid', array('fid'));
+
+  // Load all the distinct filepaths.
+  $result = db_query("SELECT DISTINCT filepath FROM {audio_image} WHERE fid IS NULL OR fid = 0");
+  while ($file = db_fetch_object($result)) {
+    // Then move the data into the files table.
+    db_query("INSERT INTO {files} (uid, filename, filepath, filemime, filesize, status, timestamp) SELECT n.uid, '%s', ai.filepath, ai.filemime, ai.filesize, %d, n.created AS timestamp FROM {node} n INNER JOIN {audio_image} ai ON n.vid = ai.vid WHERE ai.filepath = '%s' LIMIT 1", array(basename($file->filepath), FILE_STATUS_PERMANENT, $file->filepath));
+    db_query("UPDATE {audio_image} SET fid = %d WHERE filepath = '%s'", db_last_insert_id('files', 'fid'), $file->filepath);
+  }
+
+  // Remove all the old fields and setup the new indexes.
+  db_drop_field($ret, 'audio_image', 'pid');
+  db_drop_field($ret, 'audio_image', 'filesize');
+  db_drop_field($ret, 'audio_image', 'filepath');
+  db_drop_field($ret, 'audio_image', 'filemime');
+  db_drop_index($ret, 'audio_image', 'audio_image_vid_pictype');
+
+  return $ret;
+}
+
+function audio_images_update_6001() {
+  $ret = array();
+  db_drop_primary_key($ret, 'audio_image');
+  db_add_primary_key($ret, 'audio_image', array('vid', 'fid'));
+  return $ret;
+}

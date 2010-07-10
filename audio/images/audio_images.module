@@ -1,0 +1,324 @@
+<?php
+// $Id: audio_images.module,v 1.9 2008/11/26 01:17:58 drewish Exp $
+
+include_once drupal_get_path('module', 'audio') .'/audio_image.inc';
+
+/**
+ * Implementation of hook_menu().
+ */
+function audio_images_menu() {
+  $items = array();
+  $items['admin/settings/audio/images'] = array(
+    'title' => 'Images',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_images_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'audio_images.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function audio_images_theme() {
+  return array(
+    'audio_images_form' => array(
+      'arguments' => array('form'),
+    ),
+    'audio_images' => array(
+      'arguments' => array('audio_images'),
+    ),
+    'audio_image' => array(
+      'arguments' => array('images'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_file_download().
+ */
+function audio_images_file_download($filename) {
+  $filepath = file_create_path($filename);
+
+  // Check if it's one of our files.
+  $nid = db_result(db_query("SELECT ai.nid FROM {audio_image} ai INNER JOIN {files} f ON ai.fid = f.fid WHERE f.filepath = '%s'", $filepath));
+  if ($nid && $node = node_load($nid)) {
+    // Make sure they're allowed to view the node.
+    if (node_access('view', $node)) {
+      $info = image_get_info($filepath);
+      return array(
+        'Content-Type: '. mime_header_encode($info['mime_type']),
+        'Content-Length: '. (int) $info['file_size'],
+      );
+    }
+
+    // Access denied.
+    return -1;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Here we add our image fields to the audio node form.
+ */
+function audio_images_form_alter(&$form, &$form_state, $form_id) {
+  // We only alter audio node edit forms with a file attached.
+  if ($form_id == 'audio_node_form' && !empty($form['#node']->audio['file']->filepath)) {
+    drupal_add_js(drupal_get_path('module', 'audio') .'/audio.js');
+
+    $form['#validate'][] = 'audio_images_node_form_validate';
+
+    $form['audio_images'] = array(
+      '#type' => 'fieldset', '#title' => t('Audio Images'),
+      '#collapsible' => TRUE,
+      '#description' => t('Cover art or other images.'),
+      '#weight' => 0,
+      '#tree' => TRUE,
+    );
+
+    if (isset($form['#node']->audio_images)) {
+      $form['audio_images']['#theme'] = 'audio_images_form';
+      foreach ($form['#node']->audio_images as $key => $image) {
+        if ($key == 'delete' || $key == 'new') continue;
+
+        $image = (array) $image;
+        $form['audio_images'][$key] = array(
+         '#type' => 'value',
+         '#value' => $image,
+        );
+        $form['audio_images']['delete'][$key] = array(
+          '#type' => 'checkbox',
+          '#default_value' => isset($image['delete']) ? $image['delete'] : FALSE,
+        );
+      }
+    }
+
+    $form['audio_images']['new']['pictype'] = array(
+      '#type' => 'select',
+      '#title' => t('New image type'),
+      '#default_value' => variable_get('audio_image_default_type', 0x03),
+      '#options' => audio_image_type_dirty_array(),
+    );
+    $form['audio_images']['new']['audio_image_upload'] = array(
+      '#type' => 'file',
+      '#title' => t('Add a new image'),
+      '#tree' => FALSE,
+      '#attributes' => array('audio_accept' => 'gif, jpg, jpeg, png'),
+      '#description' => t('Click "Browse..." to select an image to add to this audio file. <strong>NOTE:</strong> Supported image types include GIF, JPG, and PNG.  Suggested dimensions: 170 X 170 pixels.'),
+    );
+  }
+}
+
+/**
+ * Theme function to format the audio image fieldset.
+ */
+function theme_audio_images_form(&$form) {
+  $pictypes = audio_image_type_dirty_array();
+  $header = array(t('Type'), t('MIME Type'), t('Dimensions'), t('Size'), t('Delete'));
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    if ($key != 'new' && $key != 'delete') {
+      $image = (array) $form[$key]['#value'];
+      $rows[] = array(
+        l($pictypes[$image['pictype']], $image['filepath']),
+        $image['filemime'],
+        format_size($image['filesize']),
+        $image['height'] .'x'. $image['width'],
+        drupal_render($form['delete'][$key]),
+      );
+    }
+  }
+  return (count($rows) ? theme('table', $header, $rows) : '') . drupal_render($form);
+}
+
+/**
+ * Node validate handler
+ */
+function audio_images_node_form_validate($form, &$form_state) {
+  // Check for an uploaded image.
+  $validators = array(
+    'file_validate_is_image' => array(),
+    'audio_image_validate_size' => array(),
+  );
+  if ($file = file_save_upload('audio_image_upload', $validators)) {
+    $image = image_get_info($file->filepath);
+    $file->height = $image['height'];
+    $file->width = $image['width'];
+    $file->pictype = (int) $form_state['values']['audio_images']['new']['pictype'];
+
+    $form_state['values']['audio_images'][$file->pictype .'-'. $file->fid] = $file;
+  }
+  unset($form_state['values']['audio_images']['new']);
+
+  // Move the delete checkbox values to the image
+  if (isset($form_state['values']['audio_images']['delete'])) {
+    foreach ($form_state['values']['audio_images']['delete'] as $key => $value) {
+      $form_state['values']['audio_images'][$key]['delete'] = $value;
+    }
+    unset($form_state['values']['audio_images']['delete']);
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function audio_images_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type != 'audio') {
+    return;
+  }
+
+  switch ($op) {
+    case 'load':
+      return audio_images_nodeapi_load($node);
+    case 'insert':
+      return audio_images_nodeapi_insert($node);
+    case 'update':
+      return audio_images_nodeapi_update($node);
+    case 'delete':
+      return audio_images_nodeapi_delete($node);
+    case 'delete revision':
+      return audio_images_nodeapi_delete_revision($node);
+  }
+}
+
+function audio_images_nodeapi_load($node) {
+  $ret['audio_images'] = array();
+  $result = db_query("SELECT f.fid, f.filemime, f.filepath, f.filesize, f.status, ai.nid, ai.vid, ai.pictype, ai.width, ai.height FROM {files} f INNER JOIN {audio_image} ai ON f.fid = ai.fid WHERE ai.vid = %d", $node->vid);
+  while ($img = db_fetch_object($result)) {
+    $ret['audio_images'][$img->pictype .'-'. $img->fid] = $img;
+  }
+  return $ret;
+}
+
+function audio_images_nodeapi_insert(&$node) {
+  // Add new images.
+  foreach ((array) $node->audio_images as $key => $image) {
+    $image = (object) $image;
+    $image->nid = $node->nid;
+    $image->vid = $node->vid;
+
+    if (($image->status & FILE_STATUS_PERMANENT) != FILE_STATUS_PERMANENT) {
+      $newpath = _audio_image_filename($node->vid, $image->filemime, $image->pictype, FALSE);
+      if (file_move($image, $newpath)) {
+        $image->status |= FILE_STATUS_PERMANENT;
+        drupal_write_record('files', $image, array('fid'));
+      }
+    }
+    drupal_write_record('audio_image', $image);
+    $node->audio_images[$key] = $image;
+  }
+}
+
+function audio_images_nodeapi_update(&$node) {
+  foreach ((array) $node->audio_images as $key => $image) {
+    $image = (object) $image;
+    $image->nid = $node->nid;
+    $image->vid = $node->vid;
+
+    if (!empty($image->delete)) {
+      // Delete the image.
+      _audio_images_delete($image);
+      db_query('DELETE FROM {audio_image} WHERE vid = %d AND pictype = %d AND fid = %d', $node->vid, $image->pictype, $image->fid);
+      unset($node->audio_images[$key]);
+    }
+    elseif (($image->status & FILE_STATUS_PERMANENT) != FILE_STATUS_PERMANENT) {
+      // New image, was just uploaded.
+      $newpath = _audio_image_filename($node->vid, $image->filemime, $image->pictype, FALSE);
+      if (file_move($image, $newpath)) {
+        $image->status |= FILE_STATUS_PERMANENT;
+        drupal_write_record('files', $image, array('fid'));
+      }
+      drupal_write_record('audio_image', $image);
+      $node->audio_images[$key] = $image;
+    }
+    elseif ($node->revision) {
+      // Make copies of unchanged images when creating a new revision.
+      drupal_write_record('audio_image', $image);
+      $node->audio_images[$key] = $image;
+    }
+  }
+}
+
+function audio_images_nodeapi_delete(&$node) {
+  // Delete the image files and remove them from the database.
+  $result = db_query('SELECT ai.fid, f.filepath FROM {audio_image} ai INNER JOIN {files} f ON ai.fid = f.fid WHERE nid = %d', $node->nid);
+  while ($file = db_fetch_object($result)) {
+    _audio_images_delete($file);
+  }
+  db_query('DELETE FROM {audio_image} WHERE nid = %d', $node->nid);
+}
+
+function audio_images_nodeapi_delete_revision(&$node) {
+  // Delete the image files and remove them from the database.
+  $result = db_query('SELECT ai.fid, f.filepath FROM {audio_image} ai INNER JOIN {files} f ON ai.fid = f.fid WHERE vid = %d', $node->vid);
+  while ($file = db_fetch_object($result)) {
+    _audio_images_delete($file);
+  }
+  db_query('DELETE FROM {audio_image} WHERE vid = %d', $node->vid);
+}
+
+/**
+ * If a file isn't used delete it and remove the {files} table record. The
+ * caller needs to remove record(s) from the {audio_images} table.
+ *
+ * @param $file File object
+ */
+function _audio_images_delete($file) {
+  // Check if the file will be used after this revision is deleted
+  $count = db_result(db_query('SELECT COUNT(fid) FROM {audio_image} WHERE fid = %d', $file->fid));
+
+  // If the file won't be used, delete it.
+  if ($count < 2) {
+    db_query('DELETE FROM {files} WHERE fid = %d', $file->fid);
+    file_delete($file->filepath);
+  }
+}
+
+/**
+ * Returns the array of the default image type.
+ *
+ * If no default image is found, returns a random image array.
+ */
+function audio_images_get($audio_images, $pictype = NULL) {
+  if (is_null($pictype)) {
+    $pictype = variable_get('audio_default_image_type', 0x03);
+  }
+  if (!empty($audio_images)) {
+    foreach ($audio_images as $image) {
+      $image = (object) $image;
+      if ($image->pictype == $pictype) {
+        return $image;
+      }
+    }
+    // The specified image was not found, return a random image.
+    return $audio_images[array_rand($audio_images)];
+  }
+  return FALSE;
+}
+
+/**
+ * Create a block for audio images.
+ *
+ * @param $audio_images
+ *   The node's array of images
+ */
+function theme_audio_images($audio_images) {
+  if ($image = audio_images_get($audio_images)) {
+    return "<div class='audio-image'>\n". theme('audio_image', $image) ."\n</div>\n";
+  }
+}
+
+/**
+ * Create an <img> element for an audio image.
+ */
+function theme_audio_image($image) {
+  $image = (object) $image;
+
+  list($width, $height) = @getimagesize($image->filepath);
+  $attributes = array('width' => $width, 'height' => $height);
+
+  return theme('image', file_create_url($image->filepath), audio_image_type_dirty_array($image->pictype), '', $attributes, FALSE);
+}

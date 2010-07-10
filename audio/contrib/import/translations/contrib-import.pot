@@ -1,0 +1,109 @@
+# $Id: contrib-import.pot,v 1.1 2008/09/20 21:12:47 aries Exp $
+#
+# LANGUAGE translation of Drupal (contrib-import)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  audio_import.module,v 1.8 2008/05/25 17:21:27 drewish
+#  audio_import.info,v 1.5 2008/05/25 17:21:27 drewish
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-09-20 22:44+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: contrib/import/audio_import.module:8
+msgid "Import multiple audio files and save them as audio nodes. The files will be moved from their location into the audio module's files directory. "
+msgstr ""
+
+#: contrib/import/audio_import.module:9
+msgid "Searching for files ending with %extensions in %dirpath directory."
+msgstr ""
+
+#: contrib/import/audio_import.module:11
+msgid "The audio_import module allows users with 'administer audio' permission to import audio files and create audio nodes from them. "
+msgstr ""
+
+#: contrib/import/audio_import.module:13
+msgid "Configure the audio import module's settings."
+msgstr ""
+
+#: contrib/import/audio_import.module:44
+msgid "You need to configure the import directory on the audio import module's <a href='!admin-settings-audio_import'>settings page</a>."
+msgstr ""
+
+#: contrib/import/audio_import.module:76;119
+msgid "Import"
+msgstr ""
+
+#: contrib/import/audio_import.module:82
+msgid "No files were found"
+msgstr ""
+
+#: contrib/import/audio_import.module:102
+msgid "Filename"
+msgstr ""
+
+#: contrib/import/audio_import.module:134
+msgid "%filename as <a href=\"!node-link\">@node-title</a> <a href=\"!edit-link\">[edit]</a>"
+msgstr ""
+
+#: contrib/import/audio_import.module:142
+msgid "Error importing %filename."
+msgstr ""
+
+#: contrib/import/audio_import.module:152
+msgid "No audio files were imported."
+msgstr ""
+
+#: contrib/import/audio_import.module:161
+msgid "Import path"
+msgstr ""
+
+#: contrib/import/audio_import.module:164
+msgid "The directory to import audio nodes from. Drupal will need to have write access to this directory so we can move the file."
+msgstr ""
+
+#: contrib/import/audio_import.module:165
+msgid "<strong>Note:</strong> a path begining with a <kbd>/</kbd> indicates the path is relative to the server's root, one starting without specifies a path relative to Drupal's root. I.e. <kbd>/tmp/audio</kbd> would be the temp directory off the root while <kbd>tmp/audio</kbd> would be inside Drupal's directory."
+msgstr ""
+
+#: contrib/import/audio_import.module:183
+msgid "You can't import from the audio module's directory. The import deletes the original files so you would just be asking for trouble."
+msgstr ""
+
+#: contrib/import/audio_import.module:21
+msgid "Audio import"
+msgstr ""
+
+#: contrib/import/audio_import.module:22
+msgid "Import audio from the filesystem."
+msgstr ""
+
+#: contrib/import/audio_import.module:29
+msgid "Audio import settings"
+msgstr ""
+
+#: contrib/import/audio_import.module:30
+msgid "Change settings for the Audio Import module."
+msgstr ""
+
+#: contrib/import/audio_import.module:0
+msgid "audio_import"
+msgstr ""
+
+#: contrib/import/audio_import.info:0
+msgid "Audio Import"
+msgstr ""
+
+#: contrib/import/audio_import.info:0
+msgid "Allows audio module admins to import batches of audio files."
+msgstr ""
+

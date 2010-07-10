@@ -1,0 +1,7 @@
+; $Id: audio_getid3.info,v 1.2 2008/06/10 05:23:28 drewish Exp $
+name = Audio getID3
+description = Adds the ability to read artist info from and write to audio files. Requires that the getID3 library be installed.
+package = Audio
+core = 6.x
+dependencies[] = audio
+dependencies[] = getid3

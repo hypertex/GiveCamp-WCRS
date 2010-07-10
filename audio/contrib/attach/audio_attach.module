@@ -1,0 +1,172 @@
+<?php
+// $Id: audio_attach.module,v 1.11 2009/11/25 19:30:45 drewish Exp $
+
+/**
+ * @file audio_attach.module
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function audio_attach_help($section, $args) {
+  switch ($section) {
+    case 'admin/help#audio_attach':
+      return t('<p>Allows audio files to be attached to any content type.  You can configure which content types by going to admin/content/types.</p>');
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function audio_attach_perm() {
+  // FIXME: this isn't used at this point. Need to think about adding a default
+  // view that's used to limit the attachable nodes and using it to control
+  // some access.
+  return array(
+    'attach any existing audio file'
+  );
+}
+
+/**
+ * Implementation of hook_field_formatter_info().
+ */
+function audio_attach_field_formatter_info() {
+  return array(
+    'audio_attach' => array(
+      'label' => t('Attached audio'),
+      'field types' => array('nodereference'),
+      'multiple values' => CONTENT_HANDLE_MODULE,
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function audio_attach_theme() {
+  return array(
+    'audio_attach_formatter_audio_attach' => array(
+      'arguments' => array('element' => NULL, 'teaser' => FALSE),
+    ),
+  );
+}
+
+
+/**
+ * Theme function for 'attached_audio' nodereference field formatter.
+ */
+function theme_audio_attach_formatter_audio_attach($element, $teaser = FALSE) {
+  $items = array();
+
+  foreach (element_children($element) as $item) {
+    if (!empty($element[$item]['#item']['nid'])) {
+      $audio = node_load($element[$item]['#item']['nid']);
+      if ($audio->nid) {
+        $audio = node_prepare($audio, $teaser);
+        $title = $audio->status ? l($audio->title, 'node/'. $audio->nid, array('html' => TRUE)) : check_plain($audio->title);
+        $items[] = '<div class="title">'. $title .'</div>'. theme('audio_teaser', $audio);
+      }
+    }
+  }
+
+  if (count($items)) {
+    drupal_add_css(drupal_get_path('module', 'audio_attach') .'/audio_attach.css');
+    return theme('item_list', $items, null, 'ol', array('class' => 'audio-attach-list'));
+  }
+
+  return '';
+}
+
+/**
+ * Implementation of hook_form_alter()
+ */
+function audio_attach_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    // FIXME: This is broken; I'm not sure what $form['type']['#value'] is
+    // expected to be, but it certainly doesn't always exist.
+    // if enabled adjust the form
+    //case $form['type']['#value'] .'_node_form':
+    case 'TYPE_node_form':
+      if (variable_get('audio_attach_'. $form['type']['#value'], 0)) {
+        $node = $form['#node'];
+        $form['#attributes'] = array("enctype" => "multipart/form-data");
+        $form['audio_attach'] = array('#type' => 'fieldset', '#title' => t('Attached audio files'), '#collapsible' => TRUE);
+
+        // Display currently attached files, if any.
+        if (isset($node->nid)) {
+          if ($audio_list = _audio_attach_current_list($node->nid)) {
+            $form['audio_attach']['audio_list'] = array(
+              '#type' => 'item',
+              '#prefix' => '<div id="audio-attach-items-table-wrapper">',
+              '#value' => $audio_list,
+              '#suffix' => '</div>',
+            );
+          }
+        }
+
+        if ($node->audio_aid) {
+          $form['audio_attach']['audio_aid'] = array('#type' => 'hidden', '#value' => $node->audio_aid);
+        }
+
+        // allow existing audio file to be attached
+        $form['audio_attach']['audio_existing_aid'] = array(
+          '#type' => 'select',
+          '#title' => t('Existing audio file'),
+          '#options' => audio_attach_get_audio_nodes(),
+          '#description' => t('Choose an audio file already existing on the server if you do not upload a new one.')
+          );
+
+        $form['audio_attach']['audio_upload'] = array(
+          '#type' => 'file',
+          '#title' => t('Upload new audio file'),
+          '#description' => t('Click "Browse..." to select an audio file to upload. <strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize. ', array('%maxsize' => format_size(file_upload_max_size()))),
+        );
+        $form['audio_attach']['audio_title'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Title'),
+          '#default_value' => variable_get('audio_default_title_format', '[audio-tag-title] by [audio-tag-artist]')
+        );
+        $form['audio_attach']['audio_publish'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Published'),
+          '#return_value' => 1,
+          '#default_value' => 1,
+          '#description' => t('If checked, this audio file will be published to the rest of the site.')
+        );
+      }
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function audio_attach_nodeapi(&$node, $op, $teaser, $page) {
+  global $user;
+
+  if ($node->type == 'audio' || !variable_get("audio_attach_$node->type", 0)) {
+    return;
+  }
+  switch ($op) {
+    case 'prepare':
+      // FIXME: just holding onto this until it gets moved.
+      break;
+      $audio->title_format = check_plain($_POST['audio_title']);
+      $audio->status = check_plain($_POST['audio_publish']) ? 1 : 0;
+      $audio->uid = $user->uid;
+      $audio->name = $user->name;
+      $audio->type = 'audio';
+      audio_prepare($audio);
+      if ($audio->audio_file) {
+        // Node validate is throwing errors...
+        // node_validate($audio);
+        if (!form_get_errors()) {
+          $audio = node_submit($audio);
+          node_save($audio);
+          $node->audio_aid = $audio->nid;
+        }
+      }
+      break;
+  }
+}

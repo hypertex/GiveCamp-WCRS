@@ -1,0 +1,1438 @@
+<?php
+// $Id: audio.module,v 1.159 2009/11/29 19:45:22 drewish Exp $
+
+/**
+ * Implementation of hook_help().
+ */
+function audio_help($section, $arg) {
+  switch ($section) {
+    case 'audio/by':
+      return t("You can browse for audio by any of the following fields.");
+    case 'admin/help#audio':
+      $help  = '<p>'. t('The audio module allows users to upload and store audio files on a Drupal site. Audio is an important medium for community communication as the recent rise of the <a href="!elink-en-wikipedia-org">podcast phenomenon</a> demonstrates.', array('!elink-en-wikipedia-org' => 'http://en.wikipedia.org/wiki/Podcasting')) .'</p>';
+      $help .= '<p>'. t('Users create audio nodes by uploading a file from their computer. They are then able to make changes to the metadata, perhaps adding an artist, or removing the track number. Visitors can download the audio file, view the file\'s metadata and encoding information, or browse for audio by metadata (artist, title, year, etc). Visitors can even play MP3s within their browser using the <a href="!elink-musicplayer-sourceforge-net">XSPF flash player</a> that is bundled with the module.', array('!elink-musicplayer-sourceforge-net' => 'http://musicplayer.sourceforge.net/')) .'</p>';
+      $help .= '<p>'. t('The module uses the <a href="!elink-www-getid3-org">getID3 library</a> to read and write <a href="%elink-en-wikipedia-org">ID3 tag</a> information from the audio file. getID3 can read metadata from a many different audio and video formats giving the audio module a great deal of flexibility.', array('!elink-www-getid3-org' => 'http://www.getid3.org', '!elink-en-wikipedia-org' => 'http://en.wikipedia.org/wiki/Id3')) .'</p>';
+      $help .= t('<p>You can:</p>
+                    <ul>
+                    <li>add an audio file at <a href="!node-add-audio">create content &gt;&gt; audio</a>.</li>
+                    <li>see your most recent audio files at <a href="!user">user account</a>.</li>
+                    <li>see all of the most recently added audio files at <a href="!audio">audio</a>.</li>
+                    <li>browse for audio by its metadata (artist, album, genre, etc) at <a href="!audio-by">audio &gt;&gt; by</a>.</li>
+                    <li>enable the <em>latest audio</em>, <em>random audio</em>, and <em>browse for audio</em> blocks at <a href="!admin-build-block">administer &gt;&gt; build &gt;&gt; block</a>.</li>
+                    <li>administer audio module at <a href="!admin-settings-audio">administer &gt;&gt; site configuration &gt;&gt; audio</a>.</li>
+                    </ul>', array('!audio' => url('audio'), '!audio-by' => url('audio/by'), '!user' => url('user'), '!node-add-audio' => url('node/add/audio'), '!admin-build-block' => url('admin/build/block'), '!admin-settings-audio' => url('admin/settings/audio/audio')));
+      $help .= '<p>'. t('For more information please read the configuration and customization handbook <a href="!audio">Audio page</a>.', array('!audio' => 'http://www.drupal.org/handbook/modules/audio/')) .'</p>';
+      return $help;
+    case 'admin/settings/audio':
+      $help = '<p><b>'. t('The current PHP configuration limits file uploads to %maxsize.', array('%maxsize' => format_size(file_upload_max_size()))) .'</b><br />';
+      $help .= '<p>'. t("There are two PHP ini settings, upload_max_filesize and post_max_size, that limit the maximum size of uploads. You can change these settings in the php.ini file or by using a php_value directive in Apache .htaccess file. Consult the PHP documentation for more info.") .'</p>';
+      return $help;
+    case 'admin/settings/audio/metadata':
+      $help = t("These settings let you determine what metadata the audio module tracks. You can add or remove metadata tags and select how they will be used.
+        <ul>
+        <li><em>Autocompleted</em> enables javacript autocompletion of the tag based on existing values.</li>
+        <li><em>Required</em> forces a user to enter a value</li>
+        <li><em>Hidden</em> prevents the tag from being listed in the node view</li>
+        <li><em>Browsable</em> allows users to browse for audio using that tag</li>
+        <li><em>Written to file</em> indicates that the tag should be saved to the file (this requires getid3 support)</li>
+        <li><em>Weight</em> determines the order of the tags, lower weights are listed first</li>
+        <li><em>Delete</em> indicates that you would like to remove the tag from the allowed list</li>
+        </ul>");
+      $help .= '<p>'. t('<strong>Note:</strong> deleting a tag will not remove it from the database or file until the node is saved again.') .'</p>';
+      return $help;
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function audio_menu() {
+  $items = array();
+
+  $items['admin/settings/audio'] = array(
+    'title' => 'Audio settings',
+    'description' => 'Change settings for the audio module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'audio.admin.inc',
+  );
+  $items['admin/settings/audio/main'] = array(
+    'title' => 'Audio',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => '-10',
+  );
+  $items['admin/settings/audio/metadata'] = array(
+    'title' => 'Metadata tags',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_admin_settings_metadata'),
+    'access arguments' => array('administer audio'),
+    'file' => 'audio.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/settings/audio/players'] = array(
+    'title' => 'Players',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_admin_settings_players'),
+    'access arguments' => array('administer audio'),
+    'file' => 'audio.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['audio/autocomplete'] = array(
+    'page callback' => 'audio_autocomplete',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['audio/by'] = array(
+    'title' => 'Browse by...',
+    'page callback' => 'audio_page_browse_by',
+    'file' => 'audio.pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['audio/by/%'] = array(
+    'title' => 'Audio by @tag',
+    'title arguments' => array('@tag' => 2),
+    'page callback' => 'audio_page_browse_by',
+    'page arguments' => array(2),
+    'file' => 'audio.pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['audio/by/%/%'] = array(
+    'title' => 'Audio by @tag @value',
+    'title arguments' => array('@tag' => 2, '@value' => 3),
+    'page callback' => 'audio_page_browse_by',
+    'page arguments' => array(2, 3),
+    'file' => 'audio.pages.inc',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['audio/download/%node'] = array(
+    'page callback' => 'audio_download',
+    'page arguments' => array(2),
+    'file' => 'audio.pages.inc',
+    'access callback' => '_audio_allow_download',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+  $items['audio/play/%node'] = array(
+    'page callback' => 'audio_play',
+    'page arguments' => array(2),
+    'file' => 'audio.pages.inc',
+    'access callback' => '_audio_allow_play',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function audio_theme() {
+  $theme = array(
+    'audio_file_form' => array(
+      'arguments' => array('form'),
+    ),
+    'audio_admin_settings_metadata_table' => array(
+      'arguments' => array('form_element'),
+      'file' => 'audio.admin.inc',
+    ),
+    'audio_admin_settings_players' => array(
+      'arguments' => array('form_element'),
+      'file' => 'audio.admin.inc',
+    ),
+    'audio_default_node_player' => array(
+      'arguments' => array('node'),
+    ),
+    'audio_teaser' => array(
+      'arguments' => array('node'),
+      'file' => 'audio.theme.inc',
+    ),
+    'audio_display' => array(
+      'arguments' => array('node'),
+      'file' => 'audio.theme.inc',
+    ),
+    'audio_format_tag' => array(
+      'arguments' => array('tag', 'value', 'setting'),
+      'file' => 'audio.theme.inc',
+    ),
+    'audio_format_filelength' => array(
+      'arguments' => array('fileinfo'),
+      'file' => 'audio.theme.inc',
+    ),
+    'audio_format_fileformat' => array(
+      'arguments' => array('fileinfo'),
+      'file' => 'audio.theme.inc',
+    ),
+  );
+
+  $player_path = drupal_get_path('module', 'audio') .'/players';
+  foreach (audio_get_players('names') as $name => $player) {
+    if ($player['module'] == 'audio') {
+      $theme[$player['theme_node']] = array(
+        'arguments' => array('node', 'options'),
+        'file' => $player['file'],
+        'path' => $player_path,
+      );
+      if (!empty($player['theme_xspf'])) {
+        $theme[$player['theme_xspf']] = array(
+          'arguments' => array('path', 'options'),
+          'file' => $player['file'],
+          'path' => $player_path,
+        );
+      }
+    }
+  }
+  return $theme;
+}
+
+/**
+ * Implementation of hook_node_info().
+ */
+function audio_node_info() {
+  return array(
+    'audio' => array(
+      'name' => t('Audio'),
+      'module' => 'audio',
+      'description' => t('An audio file. The audio file could be used for adding music, podcasts, or audio clips to your site.'),
+    )
+  );
+}
+
+/**
+ * Invoke hook_audio api methods.
+ *
+ * The audio module provide a hook for contributed modules. Use this rather than
+ * the nodeapi so you don't have to worry about the module invocation order.
+ *
+ *   function hook_audio($op, $node, $arg1)
+ *
+ * @param $op
+ *   The $op value will be one of the following:
+ *   'upload'
+ *       A new audio file has been uploaded. Contrib modules can read data from
+ *       the file and append it to the audio node at this point.
+ *   'access'
+ *       An operation is being performed on the node and other modules can
+ *       determine if this will be allowed. $arg1 will describe the operation
+ *       (i.e. 'play' or 'download'). Return a boolean if you want to allow or
+ *       deny this, or NULL if you don't.
+ *   'download'
+ *       A user is playing the audio node. This can be handy if you're recording
+ *       user statistics.
+ *   'play'
+ *       A user is downloading an audio node. This can be handy if you're
+ *       recording user statistics.
+ * @param $node
+ *   An audio node object.
+ */
+function audio_invoke_audioapi($op, &$node, $a3 = NULL, $a4 = NULL) {
+  $return = array();
+  foreach (module_implements('audio') as $name) {
+    $function = $name .'_audio';
+    $result = $function($op, $node, $a3, $a4);
+    if (isset($result) && is_array($result)) {
+      $return = array_merge($return, $result);
+    }
+    else if (isset($result)) {
+      $return[] = $result;
+    }
+  }
+  return $return;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function audio_perm() {
+  return array('administer audio', 'create audio', 'edit own audio',
+    'play audio', 'download audio', 'view download stats');
+}
+
+/**
+ * Implementation of hook_access().
+ */
+function audio_access($op, $node = NULL) {
+  global $user;
+
+  if (user_access('administer audio')) {
+    return TRUE;
+  }
+
+  if ($op == 'update' || $op == 'delete') {
+    if (($user->uid == $node->uid) && user_access('edit own audio')) {
+      return TRUE;
+    }
+  }
+  if ($op == 'create') {
+    if (user_access('create audio')) {
+      return TRUE;
+    }
+  }
+}
+
+/**
+ * Is the current user allowed to download an audio node?
+ *
+ * @return
+ *   boolean indicating if it's allowed.
+ */
+function _audio_allow_download($node) {
+  if ($node->type == 'audio' && isset($node->url_download) && $node->audio['downloadable']) {
+    $result = audio_invoke_audioapi('access', $node, 'download');
+
+    if (in_array(TRUE, $result)) {
+      return TRUE;
+    }
+    if (in_array(FALSE, $result)) {
+      return FALSE;
+    }
+    return user_access('download audio');
+  }
+  return FALSE;
+}
+
+/**
+ * Is the current user allowed to play an audio node?
+ *
+ * @return
+ *   boolean indicating if it's allowed.
+ */
+function _audio_allow_play($node) {
+  if ($node->type == 'audio' && isset($node->url_play)) {
+    $result = audio_invoke_audioapi('access', $node, 'play');
+
+    if (in_array(TRUE, $result)) {
+      return TRUE;
+    }
+    if (in_array(FALSE, $result)) {
+      return FALSE;
+    }
+    return user_access('play audio');
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * This deletes old temp files.
+ */
+function audio_cron() {
+  $path = audio_get_directory() .'/temp';
+  $files = file_scan_directory(file_create_path($path), '.*');
+  foreach ($files as $file => $info) {
+    if (time() - filemtime($file) > 60*60*6) {
+      file_delete($file);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_link().
+ */
+function audio_link($type, $node, $main = 0) {
+  $links = array();
+  $link_access = user_access('view download stats');
+
+  if ($type == 'node' && $node->type == 'audio') {
+    if (_audio_allow_download($node)) {
+      $links['audio_download_link'] = array(
+        'title' => t('Download audio file'),
+        'href' => $node->url_download,
+      );
+      if ($link_access) {
+        $links['audio_download_count'] = array(
+          'title' => t('@download_count downloads', array('@download_count' => $node->audio['download_count'])),
+        );
+      }
+    }
+    if (_audio_allow_play($node) && $link_access) {
+      $links['audio_play_count'] = array(
+        'title' => t('@play_count plays', array('@play_count' => $node->audio['play_count'])),
+      );
+    }
+  }
+
+  return $links;
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function audio_nodeapi(&$node, $op, $arg) {
+  if ($node->type == 'audio') {
+    switch ($op) {
+      case 'delete revision':
+        audio_delete_revision($node);
+        break;
+
+      case 'rss item':
+        $ret = array();
+        if (_audio_allow_download($node)) {
+          // Reset the node's body to remove theming.
+          $body = db_result(db_query("SELECT r.body FROM {node} n INNER JOIN {node_revisions} r ON n.nid = r.nid WHERE n.vid=%d", $node->vid));
+          $node->body = $body;
+          $node = node_prepare($node, FALSE);
+
+          $ret[] = array(
+            'key' => 'enclosure',
+            'value' => '',
+            'attributes' => array(
+              'url' => $node->url_download,
+              'length' => $node->audio['file']->filesize,
+              'type' => $node->audio['file']->filemime
+            ));
+          // Provide very basic iTunes support.
+          $ret[] = array(
+            'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+            'key' => 'itunes:duration',
+            'value' => $node->audio['playtime'],
+          );
+          $ret[] = array(
+            'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+            'key' => 'itunes:author',
+            'value' => $node->audio_tags['artist'],
+          );
+        }
+        return $ret;
+
+      case 'update index':
+        // Since the theme might hide the tag values we'll manually add them to
+        // the search index.
+        $cleantags = array();
+        foreach ($node->audio_tags as $value) {
+          $cleantags[] = check_plain($value);
+        }
+        return $cleantags;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_view().
+ */
+function audio_view(&$node, $teaser = FALSE, $page = FALSE) {
+  drupal_add_css(drupal_get_path('module', 'audio') .'/audio.css');
+
+  $node = node_prepare($node, $teaser);
+  if ($teaser) {
+    $node->content['audio'] = array(
+      '#value' => theme('audio_teaser', $node),
+      '#weight' => 0,
+    );
+  }
+  else {
+    $node->content['audio'] = array(
+      '#value' => theme('audio_display', $node),
+      '#weight' => -1,
+    );
+  }
+  return $node;
+}
+
+/**
+ * Implementation of hook_validate().
+ */
+function audio_validate(&$node, &$form) {
+  if (!isset($node->audio['file']->filepath)) {
+    form_set_error('audio_upload', t("A file must be provided. If you tried uploading a file, make sure it's less than the upload size limit."));
+  }
+
+  if (empty($form_state['values']['title_format'])) {
+    $form_state['values']['title_format'] =  variable_get('audio_default_title_format', '[audio-tag-title-raw] by [audio-tag-artist-raw]');
+  }
+}
+
+/**
+ * Implementation of hook_load().
+ */
+function audio_load($node) {
+  if ($node->vid) {
+    // This is a wonky way to load the fields but its handy right now while
+    // I'm renaming fields in the databases.
+    $fields = db_fetch_array(db_query("SELECT a.* FROM {audio} a WHERE vid=%d", $node->vid));
+    $file = db_fetch_object(db_query("SELECT * FROM {files} WHERE fid=%d", $fields['fid']));
+
+    $ret = array(
+      'title_format' => $fields['title_format'],
+      'audio' => array(
+        'play_count'     => $fields['play_count'],
+        'download_count' => $fields['download_count'],
+        'downloadable'   => $fields['downloadable'],
+        'format'         => $fields['format'],
+        'sample_rate'    => $fields['sample_rate'],
+        'channel_mode'   => $fields['channel_mode'],
+        'bitrate'        => $fields['bitrate'],
+        'bitrate_mode'   => $fields['bitrate_mode'],
+        'playtime'       => $fields['playtime'],
+        'bitrate'        => $fields['bitrate'],
+        'file'           => $file,
+      ),
+    );
+
+    if (isset($file->filepath) && file_exists($file->filepath)) {
+      // TODO: should these links be by vid?
+      $ret['url_play'] = url('audio/play/'. $node->nid, array('absolute' => TRUE));
+      if ($ret['audio']['downloadable']) {
+        // iTunes and other podcasting programs check the url to determine the
+        // file type. we'll add the original file name on to the end. see issues
+        // #35398 and #68716 for more info.
+        $url = 'audio/download/'. $node->nid .'/'. $file->filename;
+        $ret['url_download'] = url($url, array('absolute' => TRUE));
+      }
+    }
+
+    // Load the audio tags.
+    $result = db_query("SELECT tag, value FROM {audio_metadata} WHERE vid=%d", $node->vid);
+    $ret['audio_tags'] = array();
+    while ($obj = db_fetch_object($result)) {
+      $ret['audio_tags'][$obj->tag] = $obj->value;
+    }
+
+    return $ret;
+  }
+  return array();
+}
+
+/**
+ * Implementation of hook_insert().
+ */
+function audio_insert(&$node) {
+  file_move($node->audio['file']->filepath, audio_get_directory(), FILE_EXISTS_RENAME);
+  _audio_save($node);
+}
+
+/**
+ * Implementation of hook_update().
+ */
+function audio_update(&$node) {
+  // If there's a new file we need to move it to the correct location.
+  if (($node->audio['file']->status & FILE_STATUS_PERMANENT) != FILE_STATUS_PERMANENT) {
+    if (!$node->revision) {
+      // If it's not a revision the existing file needs to be removed.
+      $oldfile = db_fetch_object(db_query('SELECT f.* FROM {files} f INNER JOIN {audio} a ON f.fid = a.fid WHERE a.vid = %d', $node->vid));
+      _audio_file_delete($oldfile);
+    }
+    file_move($node->audio['file']->filepath, audio_get_directory(), FILE_EXISTS_RENAME);
+  }
+  else if ($node->revision) {
+    // New revision using existing file so we need to copy it.
+    file_copy($node->audio['file']->filepath, file_create_filename($node->audio['file']->filename, audio_get_directory()));
+    // Unset the fid so a new record is created.
+    $node->audio['file']->fid = NULL;
+  }
+
+  _audio_save($node);
+}
+
+/**
+ * Handle the busy work of saving the node's audio and file records.
+ *
+ * @param $node Node opject.
+ */
+function _audio_save(&$node) {
+  // Save the file
+  $node->audio['file']->timestamp = time();
+  $node->audio['file']->filesize = filesize($node->audio['file']->filepath);
+  $node->audio['file']->status |= FILE_STATUS_PERMANENT;
+  // If there's an fid update, otherwise insert.
+  $file_update = empty($node->audio['file']->fid) ? array() : array('fid');
+  drupal_write_record('files', $node->audio['file'], empty($node->audio['file']->fid) ? array() : array('fid'));
+
+  // Save the audio row.
+  $audio = array_merge($node->audio, array('nid' => $node->nid, 'vid' => $node->vid, 'title_format' => $node->title_format, 'fid' => $node->audio['file']->fid));
+  $audio_update = ($node->is_new || $node->revision) ? array() : array('vid');
+  drupal_write_record('audio', $audio, $audio_update);
+
+  // Remove any existing metadata.
+  db_query("DELETE FROM {audio_metadata} WHERE vid=%d", $node->vid);
+
+  // Save the new tags.
+  $allowed_tags = audio_get_tags_allowed();
+  foreach ($node->audio_tags as $tag => $value) {
+    if (in_array($tag, $allowed_tags) && $value) {
+      $metadata = array('vid' => $node->vid, 'tag' => $tag, 'value' => $value, 'clean' => audio_clean_tag($value));
+      drupal_write_record('audio_metadata', $metadata);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_delete().
+ */
+function audio_delete($node) {
+  $result = db_query('SELECT a.vid, f.* FROM {audio} a LEFT JOIN {files} f ON a.fid = f.fid WHERE nid = %d', $node->nid);
+  while ($o = db_fetch_object($result)) {
+    _audio_file_delete($o);
+    db_query('DELETE FROM {audio_metadata} WHERE vid = %d', $o->vid);
+  }
+  db_query('DELETE FROM {audio} WHERE nid = %d', $node->nid);
+}
+
+/**
+ * Delete a single revision.
+ */
+function audio_delete_revision($node) {
+  $file = db_result(db_query('SELECT a.vid, f.* FROM {audio} a LEFT JOIN {files} f ON a.fid = f.fid WHERE vid = %d', $node->vid));
+  _audio_file_delete($file);
+
+  db_query('DELETE FROM {audio_metadata} WHERE vid = %d', $node->vid);
+  db_query('DELETE FROM {audio} WHERE vid = %d', $node->vid);
+}
+
+/**
+ * Handle the busy work of deleting the file record and the file.
+ *
+ * @param unknown_type $file
+ */
+function _audio_file_delete($file) {
+  if (!empty($file->filepath)) {
+    file_delete($file->filepath);
+  }
+  if (!empty($file->fid)) {
+    db_query('DELETE FROM {files} WHERE fid = %d', array($file->fid));
+  }
+}
+
+/**
+ * Implementation of hook_form().
+ */
+function audio_form(&$node, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'audio') .'/audio.js');
+
+  $type = node_get_types('type', $node);
+  if ($type->has_title) {
+    $form['title']['#weight'] = -5;
+    $form['title']['title_format'] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($type->title_label),
+      '#default_value' => !empty($node->title_format) ? $node->title_format : variable_get('audio_default_title_format', '[audio-tag-title-raw] by [audio-tag-artist-raw]'),
+      '#description' => t("The title can use the file's metadata. You can use the tokens listed below to insert information into the title. <strong>Note:</strong> the node title is escaped so it is safe to use the -raw tokens."),
+      '#required' => TRUE,
+    );
+    $form['title']['token_help'] = array(
+      '#title' => t('Token list'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('This is a list of the tokens that can be used in the title of audio nodes.'),
+      'help' => array('#value' => theme('token_help', 'node')),
+    );
+  }
+
+  if ($type->has_body) {
+    $form['body_filter']['#weight'] = -4;
+    $form['body_filter']['body'] = array(
+      '#type' => 'textarea',
+      '#title' => check_plain($type->body_label),
+      '#default_value' => $node->body,
+      '#rows' => 5,
+      '#required' => ($type->min_word_count > 0),
+    );
+    $form['body_filter']['format'] = filter_form($node->format);
+  }
+
+
+  $form['audio'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Audio File Info'),
+    '#collapsible' => TRUE,
+    '#weight' => -1,
+    '#tree' => TRUE,
+  );
+
+  // Place a visible copy of the file path on the form (after removing the
+  // directory info from non-admins).
+  $form['audio']['display_filepath'] = array(
+    '#type' => 'item',
+    '#title' => t('Current File'),
+    '#value' => empty($node->audio['file']->filepath) ? t('No file is attached.') : (user_access('administer audio') ? $node->audio['file']->filepath : basename($node->audio['file']->filepath)),
+  );
+
+  // If we've got a file, add the file information fields.
+  if (!empty($node->audio['file']->filename)) {
+    $form['audio']['#theme'] = 'audio_file_form';
+
+    // Store the non-user editable file information as values.
+    $form['audio']['file'] = array(
+      '#type' => 'value',
+      '#value' => $node->audio['file'],
+    );
+
+    $form['audio']['format'] = array(
+      '#type' => 'select',
+      '#title' => t('Format'),
+      '#default_value' => $node->audio['format'],
+      '#options' => drupal_map_assoc(array('', 'aac', 'ac3', 'au', 'avr', 'flac', 'midi', 'mod', 'mp3', 'mpc', 'ogg', 'voc'), 'drupal_strtoupper'),
+    );
+    $form['audio']['file_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t('File Size'),
+      '#default_value' => $node->audio['file']->filesize,
+    );
+    $form['audio']['playtime'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Length'),
+      '#default_value' => $node->audio['playtime'],
+      '#description' => t('The format is hours:minutes:seconds.'),
+    );
+    $form['audio']['sample_rate'] = array(
+      '#type' => 'select',
+      '#title' => t('Sample rate'),
+      '#default_value' => $node->audio['sample_rate'],
+      '#options' => array('' => '', '48000' => '48,000 Hz', '44100' => '44,100 Hz', '32000' => '32,000 Hz', '22050' => '22,050 Hz', '11025' => '11,025 Hz', '8000' => '8,000 Hz'),
+    );
+    $form['audio']['channel_mode'] = array(
+      '#type' => 'select',
+      '#title' => t('Channel mode'),
+      '#default_value' => $node->audio['channel_mode'],
+      '#options' => array('stereo' => t('Stereo'), 'mono' => t('Mono')),
+    );
+    $form['audio']['bitrate'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Bitrate'),
+      '#default_value' => $node->audio['bitrate'],
+    );
+    $form['audio']['bitrate_mode'] = array(
+      '#type' => 'select',
+      '#title' => t('Bitrate mode'),
+      '#default_value' => $node->audio['bitrate_mode'],
+      '#options' => array('' => '', 'cbr' => t('Constant'), 'vbr' => t('Variable')),
+    );
+
+    // Users shouldn't be able to change the play and download counts so we'll
+    // put these for viewing...
+    $form['audio']['display_play_count'] = array(
+      '#type' => 'item',
+      '#title' => t('Play count'),
+      '#value' => $node->audio['play_count'],
+    );
+    $form['audio']['display_download_count'] = array(
+      '#type' => 'item',
+      '#title' => t('Download count'),
+      '#value' => $node->audio['download_count'],
+    );
+    // ...and these are what we'll save back to the node.
+    $form['audio']['play_count'] = array(
+      '#type' => 'value',
+      '#value' => $node->audio['play_count'],
+    );
+    $form['audio']['download_count'] = array(
+      '#type' => 'value',
+      '#value' => $node->audio['download_count'],
+    );
+  }
+
+  $extensions = implode(', ', array_filter(explode(' ', variable_get('audio_allowed_extensions', 'mp3 wav ogg'))));
+  $form['audio']['audio_upload'] = array(
+    '#tree' => FALSE,
+    '#type' => 'file',
+    '#title' => empty($node->audio['file']->filename) ? t('Add a new audio file') : t('Replace this with a new file'),
+    '#attributes' => array('audio_accept' => $extensions),
+    '#description' => t('Click "Browse..." to select an audio file to upload. Only files with the following extensions are allowed: %allowed-extensions.', array('%allowed-extensions' => $extensions)) .'<br />'
+      . t('<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize.', array('%maxsize' => format_size(file_upload_max_size()))),
+  );
+  $form['audio']['downloadable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow file downloads.'),
+    '#default_value' => isset($node->audio['downloadable']) ? $node->audio['downloadable'] : variable_get('audio_default_downloadable', 1),
+    '#description' => t('If checked, a link will be displayed allowing visitors to download this audio file on to their own computer.') .'<br />'
+      . t('<strong>WARNING:</strong> even if you leave this unchecked, clever users will be able to find a way to download the file. This just makes them work a little harder to find the link.'),
+  );
+
+
+  // If we've got a file, add the fields for editing meta data.
+  if (!empty($node->audio['file']->filepath)) {
+    $form['audio_tags'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Audio Metadata'),
+      '#collapsible' => TRUE,
+      '#tree' => TRUE,
+      '#weight' => -3,
+    );
+    // Delegate out the dirty work of building form elements.
+    foreach (audio_get_tag_settings() as $tag => $tag_settings) {
+      $form['audio_tags'][$tag] = _audio_build_tag_form($tag, $tag_settings, empty($node->audio_tags[$tag]) ? '' : $node->audio_tags[$tag]);
+    }
+  }
+
+  $form['#validate'][] = 'audio_node_form_validate';
+  $form['#submit'][] = 'audio_node_form_submit';
+  $form['#attributes'] = array('enctype' => 'multipart/form-data');
+
+  return $form;
+}
+
+/**
+ * Theme function to put the form elements into a table. Steal some CSS from
+ * the watchdog module.
+ */
+function theme_audio_file_form($form) {
+  // List of elements to leave out of the table.
+  $skip_list = array('audio_upload' => 1, 'downloadable' => 1);
+
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    if (!isset($skip_list[$key])) {
+      if ($form[$key]['#type'] != 'hidden' && $form[$key]['#type'] != 'value') {
+        $title = $form[$key]['#title'];
+        unset($form[$key]['#title']);
+        $rows[] = array(
+          array('data' => $title, 'header' => TRUE),
+          drupal_render($form[$key]),
+        );
+      }
+    }
+  }
+
+  $output = theme('table', array(), $rows, array('class' => 'watchdog-event'));
+  return $output . drupal_render($form);
+}
+
+/**
+ * Node submit handler
+ */
+function audio_node_form_validate($form, &$form_state) {
+  // Check for an upload.
+  $validators = array(
+    'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
+  );
+  if ($file = file_save_upload('audio_upload', $validators)) {
+    $node = (object) $form_state['values'];
+    $node->audio = array(
+      'play_count' => 0,
+      'download_count' => 0,
+      'downloadable' => (bool) $form_state['values']['audio']['downloadable'],
+      'file' => $file,
+    );
+
+    // Allow other modules to modify the node.
+    audio_invoke_audioapi('upload', $node);
+
+    // ...save info so that it shows up in both the preview and
+    // form. Note that we do this after calling we called our api hook with
+    // the upload operation, it gives the audio_id3 module a chance to read
+    // the tags.
+    $form_state['values']['audio'] = $node->audio;
+    $form_state['values']['audio_tags'] = $node->audio_tags;
+    $form_state['values']['audio_images'] = $node->audio_images;
+  }
+}
+
+/**
+ * Node submit handler
+ */
+function audio_node_form_submit($form, &$form_state) {
+  $node = (object) $form_state['values'];
+
+  // Use the token module to build the title. Clear the existing title to
+  // prevent the [title] tag from being expanded.
+  $node->title = '';
+  token_get_values('node', $node, TRUE);
+  $form_state['values']['title'] = token_replace($form_state['values']['title_format'], 'node', $node);
+}
+
+/**
+ * Construct a form element to represent a tag.
+ *
+ * @param $tag
+ *   Name of the tag.
+ * @param $tag_settings
+ *   Array of settings that determine the way the tag is handled.
+ * @param $value
+ *   Value of the tag.
+ * @return
+ *  Array with a form element.
+ */
+function _audio_build_tag_form($tag, $tag_settings, $value) {
+  $form_element = array(
+    '#type' => 'textfield',
+    '#title' => t(ucwords(str_replace('_', ' ', $tag))),
+    '#default_value' => $value,
+    '#maxlength' => 255,
+    '#required' => (boolean) $tag_settings['required'],
+  );
+
+  if ($tag_settings['autocomplete']) {
+    $form_element['#autocomplete_path'] = 'audio/autocomplete/'. $tag;
+  }
+
+  switch ($tag) {
+    case 'track':
+      $form_element['#title'] = t('Track Number');
+      $form_element['#maxlength'] = 10;
+      $form_element['#description'] = t("Enter either a single number or fraction here. '1' means that this is the first track on the album, and '1/8' .");
+      break;
+
+    case 'genre':
+      $form_element['#maxlength'] = 40;
+      break;
+  }
+
+  return $form_element;
+}
+
+
+/**
+ * Implementation of hook_user().
+ */
+function audio_user($type, &$edit, &$user) {
+  if ($type == 'view' && db_result(db_query(db_rewrite_sql("SELECT COUNT(*) FROM {node} n WHERE n.type = 'audio' AND n.uid = %d AND n.status = 1"), $user->uid))) {
+    $user->content['summary']['audio'] =  array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Audio'),
+      '#value' => l(t("Listen to @username's recent audio files", array('@username' => $user->name)), "audio/user/$user->uid"),
+      '#attributes' => array('class' => 'audio'),
+    );
+  }
+}
+
+/**
+ * Implementation of hook_block().
+ *
+ * Provides a block for browsing by metadata.
+ */
+function audio_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[2]['info'] = t('Audio: Browse by');
+      return $blocks;
+
+    case 'view':
+      if (user_access('access content')) {
+        switch ($delta) {
+          case 2:
+            $items = array();
+            $settings = audio_get_tag_settings();
+            $result = db_query(db_rewrite_sql('SELECT DISTINCT a.tag FROM {node} n INNER JOIN {audio_metadata} a ON n.vid = a.vid WHERE n.status = 1 ORDER BY a.tag ASC'));
+            while ($obj = db_fetch_object($result)) {
+              if ($settings[$obj->tag]['browsable']) {
+                $items[] = l($obj->tag, 'audio/by/'. $obj->tag);
+              }
+            }
+            $block['subject'] = t('Browse for audio by');
+            $block['content'] = theme('item_list', $items);
+            break;
+        }
+        return $block;
+      }
+  }
+}
+
+/**
+ * Implementation of hook_file_download().
+ */
+function audio_file_download($filename) {
+  $filepath = file_create_path($filename);
+
+  // Check if it's one of our files.
+  if ($file = db_fetch_object(db_query("SELECT a.nid, f.* FROM {audio} a INNER JOIN {files} f ON a.fid = f.fid WHERE f.filepath = '%s'", $filepath))) {
+    if (isset($file->nid) && $node = node_load($file->nid)) {
+      // Make sure they're allowed to view the node.
+      if (node_access('view', $node)) {
+        return array(
+          'Content-Type: '. mime_header_encode($file->filemime),
+          'Content-Length: '. (int) $file->filesize,
+        );
+      }
+
+      // Access denied.
+      return -1;
+    }
+  }
+}
+/**
+ * Get an array of the allowed tags.
+ *
+ * @return
+ *   Array of allowed tags.
+ */
+function audio_get_tags_allowed() {
+  return array_keys(audio_get_tag_settings());
+}
+
+/**
+ * Get an array of the tags and their settings.
+ *
+ * @return
+ *   Array of allowed tags.
+ */
+function audio_get_tag_settings() {
+  $defaults = array(
+    'artist' => array('autocomplete' => 1, 'required' => 1, 'hidden' => 0,
+      'writetofile' => 1, 'browsable' => 1, 'weight' => -2),
+    'title'  => array('autocomplete' => 0, 'required' => 1, 'hidden' => 0,
+       'writetofile' => 1, 'browsable' => 1, 'weight' => -2),
+    'album'  => array('autocomplete' => 1, 'required' => 0, 'hidden' => 0,
+       'writetofile' => 1, 'browsable' => 1, 'weight' => -1),
+    'track'  => array('autocomplete' => 0, 'required' => 0, 'hidden' => 0,
+       'writetofile' => 1, 'browsable' => 0, 'weight' => -1),
+    'genre'  => array('autocomplete' => 1, 'required' => 0, 'hidden' => 0,
+       'writetofile' => 1, 'browsable' => 1, 'weight' => 0),
+    'year'   => array('autocomplete' => 0, 'required' => 0, 'hidden' => 0,
+       'writetofile' => 1, 'browsable' => 1, 'weight' => 1),
+  );
+  return variable_get('audio_tag_settings', $defaults);
+}
+
+/**
+ * Retrieve autocomplete suggestions for existing audio metadata tags.
+ *
+ * @param $tag
+ *   tag listed in audio_get_tag_settings() where autocomplete is true.
+ * @param $value
+ *   partial tag value to try to find in the database.
+ */
+function audio_autocomplete($tag = '', $value = '') {
+  $matches = array();
+  $tags = audio_get_tag_settings();
+  if (isset($tags[$tag]) && $tags[$tag]['autocomplete']) {
+    $result = db_query_range("SELECT DISTINCT a.value FROM {audio_metadata} a WHERE a.tag = '%s' AND LOWER(a.value) LIKE LOWER('%s%%') ORDER BY a.value", $tag, $value, 0, 10);
+    while ($tag = db_fetch_object($result)) {
+      $matches[$tag->value] = check_plain($tag->value);
+    }
+  }
+  print drupal_to_js($matches);
+  exit();
+}
+
+/**
+ * Get the audio files directory.
+ *
+ * @return
+ *   string path to the audio directory
+ */
+function audio_get_directory() {
+  // We have to make sure the files directory exists first...
+  $dir = file_directory_path();
+  file_check_directory($dir, FILE_CREATE_DIRECTORY, 'made up element name');
+  // ...then that our audio sub-directory exists.
+  $dir .= '/audio';
+  file_check_directory($dir, FILE_CREATE_DIRECTORY, 'made up element name');
+
+  return $dir;
+}
+
+
+/**
+ * Loads the player plugs-ins and returns their details.
+ *
+ * @return
+ *   Array with two sub arrays. The first keyed by player name, the second
+ *   keyed by format and then player name. The same player may be listed for
+ *   mulaudio_page_browse_bytiple formats.
+ */
+function _audio_player_build_list() {
+  // Invoke any modules that implement the hook.
+  $players_name = module_invoke_all('audio_player');
+
+  // Load all our module's player plugins.
+  $path = drupal_get_path('module', 'audio') .'/players';
+  $files = drupal_system_listing('.inc$', $path, 'name', 0);
+  foreach ($files as $file) {
+    require_once('./'. $file->filename);
+    $function = 'audio_'. $file->name .'_audio_player';
+    if (function_exists($function)) {
+      $result = $function();
+      if (isset($result) && is_array($result)) {
+        foreach (array_keys($result) as $player) {
+          // Keep track of the file where this player was found.
+          $result[$player]['file'] = $file->basename;
+        }
+        $players_name = array_merge($players_name, $result);
+      }
+    }
+  }
+
+  // Group players by format.
+  $players_format = array();
+  foreach ($players_name as $name => $player) {
+    foreach ($player['formats'] as $format) {
+      $players_format[$format][$name] = $player;
+    }
+  }
+
+  return array($players_name, $players_format);
+}
+
+/**
+ * Return information on the installed player plugins.
+ *
+ * @param $op
+ *   String specifying the operation. Possible values are:
+ *     'formats'
+ *     'format'
+ *     'names'
+ *     'name'
+ * @param $name
+ *   Name of a specific player, used with $op = 'format' or 'name'.
+ */
+function audio_get_players($op = 'names', $name = '') {
+  static $_player_name, $_player_format;
+
+  if (!isset($_player_format)) {
+    list($_player_name, $_player_format) = _audio_player_build_list();
+  }
+
+  switch ($op) {
+    case 'formats':
+      return $_player_format;
+    case 'format':
+      if (isset($_player_format[$name])) {
+        return $_player_format[$name];
+      }
+      return FALSE;
+    case 'names':
+      return $_player_name;
+    case 'name':
+      if (isset($_player_name[$name])) {
+        return $_player_name[$name];
+      }
+      return FALSE;
+    default:
+      return FALSE;
+  }
+}
+
+/**
+ * Build HTML to play an audio node.
+ *
+ * @param $node
+ *   Node object.
+ * @param $playername
+ *   Optional, string specifying the name of the desired player.
+ * @return
+ *   HTML to play the audio tracks.
+ */
+function audio_get_node_player($node, $playername = NULL) {
+  if (_audio_allow_play($node)) {
+    $format = $node->audio['format'];
+    if (!isset($playername)) {
+      $playername = variable_get('audio_player_'. $format, '1pixelout');
+    }
+    $player = audio_get_players('name', $playername);
+    // Try to use the requested player, if that doesn't work out, use the generic one.
+    return theme(array($player['theme_node'], 'audio_default_node_player'), $node, isset($player['options']) ? $player['options'] : array());
+  }
+}
+
+/**
+ * Provide a link to the audio file.
+ *
+ * @param $node
+ *   Node object.
+ */
+function theme_audio_default_node_player($node) {
+  return '<span class="audio">'. l(t('Click to play'), $node->url_play) ."</span>\n";
+}
+
+/**
+ * Take a tag and force it to be a-z 0-9 _ -
+ *
+ * @param $string
+ *   ID3 tag value
+ * @return
+ *   cleaned up tag value for URL or database
+ */
+function audio_clean_tag($string) {
+  // If we've got characters besides 0-9 A-Z a-z hyphen and underscore, replace
+  // them.
+  if (preg_match('/[^-\w]/', $string)) {
+    // Remove accents...
+    $string = strtr($string, '������������������������������������������������������������', 'SZszYAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy');
+    // ...convert to equivalent chars...
+    $string = strtr($string, array('�' => 'TH', '�' => 'th', '�' => 'DH', '�' => 'dh', '�' => 'ss', '�' => 'OE', '�' => 'oe', '�' => 'AE', '�' => 'ae', '�' => 'u'));
+    // ... and remove anything else that's not alphanumeric and replace it with an underscore.
+    $string = preg_replace('/[^-\w]+/', '_', $string);
+  }
+  // Remove leading and trailing underscores.
+  $string = trim($string, '_');
+  // Finally, make it to lower case.
+  return strtolower($string);
+}
+
+
+/**
+ * Create audio nodes from a file.
+ *
+ * Function for other modules to use to create a audio node from a file. Once
+ * you've created it you can make any changes and then save it using
+ * node_save().
+ *
+ * @param $filepath
+ *   Full path to an audio file. be aware that the file will be moved into
+ *   drupal's directory.
+ * @param $title_format
+ *   An optional, token string for generating the node's title. If nothing is
+ *   provided the default title format will be used.
+ * @param $body
+ *   An optional string to use for the node's body.
+ * @param $taxonomy
+ *   An optional array of taxonomy terms to assign to the node if the taxonomy
+ *   module is installed.
+ * @param $tags
+ *   An optional array of metadata to add to the node. These will overwrite
+ *   any values loaded from the ID3 tags.
+ * @return
+ *   A node or FALSE on error.
+ */
+function audio_api_insert($filepath, $title_format = NULL, $body = NULL, $tags = array(), $taxonomy = array()) {
+  global $user;
+
+  // For node_object_prepare()
+  module_load_include('inc', 'node', 'node.pages');
+
+  // Check for user permission.
+  if (!audio_access('create')) {
+    drupal_access_denied();
+  }
+
+  // Begin building file object.
+  $file = new stdClass();
+  $file->uid = $user->uid;
+  $file->filepath = $filepath;
+  $file->filename = basename($file->filepath);
+  $file->filemime = module_exists('mimedetect') ? mimedetect_mime($file->filepath) : file_get_mimetype($file->filepath);
+  $file->filesize = filesize($file->filepath);
+  $file->timestamp = time();
+  $file->status = FILE_STATUS_TEMPORARY;
+  drupal_write_record('files', $file);
+
+  $node = new stdClass();
+  $node->nid = NULL;
+  $node->type = 'audio';
+  $node->uid = $user->uid;
+  $node->name = $user->name;
+  $node->language = '';
+  $node->title = '';
+  $node->title_format = $title_format;
+  $node->body = $body;
+
+  // Set the node's defaults... (copied this from node and comment.module)
+  $node_options = variable_get('node_options_'. $node->type, array('status', 'promote'));
+  $node->status = in_array('status', $node_options);
+  $node->moderate = in_array('moderate', $node_options);
+  $node->promote = in_array('promote', $node_options);
+  if (module_exists('comment')) {
+    $node->comment = variable_get("comment_$node->type", COMMENT_NODE_READ_WRITE);
+  }
+  if (module_exists('taxonomy') && is_array($taxonomy)) {
+    $node->taxonomy = $taxonomy;
+  }
+
+  $node->audio_tags = array();
+  $node->audio_images = array();
+
+  $node->audio = array(
+    'downloadable' => variable_get('audio_default_downloadable', 1),
+    'play_count' => 0,
+    'download_count' => 0,
+    'file' => $file,
+  );
+
+  node_object_prepare($node);
+
+  // Allow other modules to modify the node (hopefully reading in tags).
+  audio_invoke_audioapi('upload', $node);
+
+  // Add the tags (overwriting any that audio_getid3 may have loaded).
+  if (is_array($tags)) {
+    $node->audio_tags = array_merge($node->audio_tags, $tags);
+  }
+
+  // Build the title manually (since we don't call node_validate()).
+  if (empty($node->title_format)) {
+    $node->title_format = variable_get('audio_default_title_format', '[audio-tag-title-raw] by [audio-tag-artist-raw]');
+  }
+  // Flush the token cache, otherwise when importing multiple nodes they'll all
+  // have the same title.
+  token_get_values('node', $node, TRUE);
+  $node->title = token_replace($node->title_format, 'node', $node);
+
+  // Save it.
+  $node = node_submit($node);
+  node_save($node);
+
+  return $node;
+}
+
+/**
+ * Parse an array into a valid urlencoded query string.
+ *
+ * This function is a work-around for a drupal_urlencode issue in core.
+ * See: http://drupal.org/node/158687 for details.
+ *
+ * @param $query
+ *   The array to be processed e.g. $_GET.
+ * @param $exclude
+ *   The array filled with keys to be excluded. Use parent[child] to exclude
+ *   nested items.
+ * @param $parent
+ *   Should not be passed, only used in recursive calls.
+ * @return
+ *   urlencoded string which can be appended to/as the URL query string.
+ */
+function audio_query_string_encode($query, $exclude = array(), $parent = '') {
+  $params = array();
+
+  foreach ($query as $key => $value) {
+    $key = urlencode($key);
+    if ($parent) {
+      $key = $parent .'['. $key .']';
+    }
+
+    if (in_array($key, $exclude)) {
+      continue;
+    }
+
+    if (is_array($value)) {
+      $params[] = audio_query_string_encode($value, $exclude, $key);
+    }
+    else {
+      $params[] = $key .'='. urlencode($value);
+    }
+  }
+
+  return implode('&', $params);
+}
+
+/**
+ * Determines if an audio node can be played by Flash players.
+ *
+ * @param $node
+ *   Node object.
+ * @return
+ *   Boolean
+ */
+function audio_is_flash_playable($node) {
+  // Flash only supports a limited range of sample rates.
+  switch ($node->audio['sample_rate']) {
+    case '44100': case '22050': case '11025':
+      return TRUE;
+    default:
+      return FALSE;
+  }
+}
+
+/**
+ * Implementation of hook_view_api().
+ */
+function audio_views_api() {
+  return array(
+    'api' => 2.0,
+    'path' => drupal_get_path('module', 'audio') . '/views',
+  );
+}
+
+/**
+ * Implementation of the token.module's hook_token_values().
+ *
+ * @param $type
+ *   The current context -- 'node', 'user', 'global', etc.
+ * @param $object
+ *   The specific node, user, etc. that should be used as the basis for the
+ *   replacements.
+ * @return
+ *   Array of tokens.
+ */
+function audio_token_values($type, $object = NULL) {
+  $node = $object;
+  if ($type == 'node' && $node->type == 'audio') {
+    // Tags.
+    foreach (audio_get_tags_allowed() as $tag) {
+      if (isset($node->audio_tags[$tag])) {
+        $name = strtr($tag, '_', '-');
+        $tokens['audio-tag-'. $name] = check_plain($node->audio_tags[$tag]);
+        $tokens['audio-tag-'. $name .'-raw'] = $node->audio_tags[$tag];
+      }
+    }
+
+    // Formatted file info.
+    $tokens['audio-length'] = theme('audio_format_filelength', $node->audio);
+    $tokens['audio-format'] = theme('audio_format_fileformat', $node->audio);
+
+    // Raw file info.
+    $keys = array('format', 'filename', 'filepath', 'filemime', 'file_size', 'sample_rate', 'channel_mode', 'bitrate', 'bitrate_mode', 'playtime');
+    foreach ($keys as $key) {
+      if (isset($node->audio[$key])) {
+        $tokens['audio-'. strtr($key, '_', '-')] = check_plain($node->audio[$key]);
+      }
+    }
+    // Play and download links.
+    if (isset($node->url_play)) {
+      $tokens['audio-player'] = audio_get_node_player($node);
+      $tokens['audio-url-play'] = $node->url_play;
+    }
+    if (isset($node->url_download)) {
+      $tokens['audio-url-download'] = $node->url_download;
+    }
+
+    return $tokens;
+  }
+}
+
+/**
+ * Implementation of the token.module's hook_token_values().
+ *
+ * @param $type
+ *   Indicates the context that token help is being generated for. Unlike
+ *   hook_token_values however, you should show ALL tokens at the same time if
+ *   $type is 'all'.
+ * @return
+ *   Array of token information.
+ */
+function audio_token_list($type = 'all') {
+  if ($type == 'node' || $type == 'all') {
+    // Tags.
+    foreach (audio_get_tags_allowed() as $tag) {
+      $name = strtr($tag, '_', '-');
+      $tokens['node']['audio-tag-'. $name] = t("Audio node @tag tag value.", array('@tag' => $tag));
+      $tokens['node']['audio-tag-'. $name .'-raw'] = t("Audio node @tag tag value. WARNING - raw user input.", array('@tag' => $tag));
+    }
+
+    // Formatted file info.
+    $tokens['node']['audio-length']       = t("Audio node formatted file length information.");
+    $tokens['node']['audio-format']       = t("Audio node formatted file format information.");
+
+    // Raw file info.
+    $tokens['node']['audio-sample-rate']  = t("Audio node sample rate, integer e.g. 44100.");
+    $tokens['node']['audio-channel-mode'] = t("Audio node channels, e.g. mono, stereo.");
+    $tokens['node']['audio-bitrate']      = t("Audio node bitrate, integer e.g. 19200.");
+    $tokens['node']['audio-bitrate-mode'] = t("Audio node bitrate encoding mode, e.g. vbr, cbr.");
+    $tokens['node']['audio-playtime']     = t("Audio node play time, minutes:seconds.");
+    $tokens['node']['audio-file-format']  = t("Audio node file format, e.g. mp3, ogg");
+    $tokens['node']['audio-file-name']    = t("Audio node original, uploaded file name.");
+    $tokens['node']['audio-file-path']    = t("Audio node file path.");
+    $tokens['node']['audio-file-mime']    = t("Audio node MIME type.");
+    $tokens['node']['audio-file-size']    = t("Audio node file size, in bytes.");
+
+    // Play and download links.
+    $tokens['node']['audio-player']       = t("Audio node player.");
+    $tokens['node']['audio-url-play']     = t("Audio node play URL.");
+    $tokens['node']['audio-url-download'] = t("Audio node download URL.");
+    return $tokens;
+  }
+}
+
+/**
+* Implements hook_content_extra_fields()
+*
+* CCK hook to allow sorting of the audio settings field.
+*/
+function audio_content_extra_fields($type_name) {
+  if ($type_name == 'audio') {
+    return array(
+      'audio' => array(
+        'label' => t('Audio files'),
+        'description' => t('Audio uploads for posts'),
+        'weight' => 1,
+      ),
+    );
+  }
+}

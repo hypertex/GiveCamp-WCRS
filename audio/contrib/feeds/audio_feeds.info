@@ -1,0 +1,7 @@
+; $Id: audio_feeds.info,v 1.5 2009/09/14 04:40:57 drewish Exp $
+name = Audio Feeds
+description = Provide XSPF, M3U, and PLS feeds for attached audio nodes.
+package = "Audio"
+core = 6.x
+dependencies[] = audio
+dependencies[] = content

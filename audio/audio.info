@@ -1,0 +1,8 @@
+; $Id: audio.info,v 1.8 2008/05/25 17:21:26 drewish Exp $
+name = Audio
+description = Allows you to upload and playback audio files.
+package = Audio
+core = 6.x
+dependencies[] = token
+dependencies[] = views
+#dependencies[] = views_rss

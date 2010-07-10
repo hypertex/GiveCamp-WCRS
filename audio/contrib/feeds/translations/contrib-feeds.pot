@@ -1,0 +1,82 @@
+# $Id: contrib-feeds.pot,v 1.1 2008/09/20 21:12:47 aries Exp $
+#
+# LANGUAGE translation of Drupal (contrib-feeds)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  audio_feeds_views.inc,v 1.10 2008/05/25 17:21:27 drewish
+#  audio_feeds.module,v 1.5 2008/05/25 17:21:27 drewish
+#  audio_feeds.info,v 1.3 2008/05/25 17:21:27 drewish
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-09-20 22:44+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: contrib/feeds/audio_feeds_views.inc:12
+msgid "Audio: XSPF/M3U/PLS Playlist"
+msgstr ""
+
+#: contrib/feeds/audio_feeds_views.inc:150
+msgid "m3u"
+msgstr ""
+
+#: contrib/feeds/audio_feeds_views.inc:152
+msgid "pls"
+msgstr ""
+
+#: contrib/feeds/audio_feeds_views.inc:154
+msgid "xspf"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:20
+msgid "This module creates XSPF, M3U, and PLS audio feeds."
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:36 contrib/feeds/audio_feeds.info:0
+msgid "Audio Feeds"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:39
+msgid "Should users be allowed to create XSPF, M3U, and PLS feeds of attached audio files?"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:61;104
+msgid "M3U"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:63
+msgid "Stream M3U feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:68;110
+msgid "PLS"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:70
+msgid "Stream PLS feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:75;98
+msgid "XSPF"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:77
+msgid "Shareable XSPF feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:0
+msgid "audio_feeds"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.info:0
+msgid "Provide XSPF, PLS, and M3U audio XML feeds."
+msgstr ""
+

@@ -1,0 +1,42 @@
+/* $Id: audio-rtl.css,v 1.2 2007/08/12 00:15:39 drewish Exp $ */
+/* RTL by JCss Module */
+
+div.audio-node {
+    /* overflow:  hidden; must override in rtl */  
+}
+
+ul.audio {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.audio li {
+  float: right; /* my override JCss.Old float: left; */
+  margin: 1em; 
+}
+
+ul.audio-info {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; 
+}
+
+ul.audio-info li {  
+  margin: 2px 0;
+  padding-right: 5px;  /* JCss.Old left JCSS_TMP_VALUE: 5px */ 
+}
+
+
+div.audio-image {
+  text-align: center;
+  float: left; /* JCss.Old float: right; */
+  padding: 5px;
+  margin-right: 10px; /* JCss.Old left JCSS_TMP_VALUE: 10px */
+  background-color: #ccc;
+}
+
+div.audio-image img {
+  border: 1px solid #999;
+}
+

@@ -1,0 +1,86 @@
+# $Id: contrib-attach.pot,v 1.1 2008/09/20 21:12:47 aries Exp $
+#
+# LANGUAGE translation of Drupal (contrib-attach)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  audio_attach.module,v 1.9 2008/05/25 17:21:27 drewish
+#  audio_attach.install,v 1.4 2008/05/25 17:21:27 drewish
+#  audio_attach.info,v 1.3 2008/05/25 17:21:27 drewish
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-09-20 22:44+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: contrib/attach/audio_attach.module:16
+msgid "<p>Allows audio files to be attached to any content type.  You can configure which content types by going to admin/content/types.</p>"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:69
+msgid "Attach audio files"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:72
+msgid "Should this node allows users to attach audio files?"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:85
+msgid "Attached audio files"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:106
+msgid "Existing audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:108
+msgid "Choose an audio file already existing on the server if you do not upload a new one."
+msgstr ""
+
+#: contrib/attach/audio_attach.module:113
+msgid "Upload new audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:114
+msgid "Click \"Browse...\" to select an audio file to upload. <strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize. "
+msgstr ""
+
+#: contrib/attach/audio_attach.module:118
+msgid "Title"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:123
+msgid "Published"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:126
+msgid "If checked, this audio file will be published to the rest of the site."
+msgstr ""
+
+#: contrib/attach/audio_attach.module:44
+msgid "attach any existing audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:0
+msgid "audio_attach"
+msgstr ""
+
+#: contrib/attach/audio_attach.install:23
+msgid "Attaches an audio node to another node."
+msgstr ""
+
+#: contrib/attach/audio_attach.info:0
+msgid "Audio Attach"
+msgstr ""
+
+#: contrib/attach/audio_attach.info:0
+msgid "Allows audio files to be attached to any node type."
+msgstr ""
+

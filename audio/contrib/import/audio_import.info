@@ -1,0 +1,6 @@
+; $Id: audio_import.info,v 1.5 2008/05/25 17:21:27 drewish Exp $
+name = Audio Import
+description = Allows audio module admins to import batches of audio files.
+package = Audio
+core = 6.x
+dependencies[] = audio

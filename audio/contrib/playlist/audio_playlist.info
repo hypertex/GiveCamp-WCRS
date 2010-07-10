@@ -1,0 +1,7 @@
+; $Id: audio_playlist.info,v 1.4 2008/10/02 07:12:35 drewish Exp $
+name = Audio Playlist
+description = Provide 'Add to playlist' link to audio content.
+package = "Audio"
+;WAITING ON UPDATE: core = 6.x
+dependencies[] = audio
+dependencies[] = audio_attach

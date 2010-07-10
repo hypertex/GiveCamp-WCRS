@@ -1,0 +1,1306 @@
+# $Id: uk-ua.po,v 1.1 2009/05/23 12:07:52 podarok Exp $
+#
+# Ukrainian translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  audio.admin.inc,v 1.1 2008/05/25 23:10:50 drewish
+#  audio_images.module,v 1.2 2008/06/10 05:23:28 drewish
+#  audio.theme.inc,v 1.1 2008/05/25 23:10:50 drewish
+#  audio.module,v 1.138 2008/06/10 05:23:27 drewish
+#  audio_getid3.module,v 1.3 2008/06/19 08:57:11 drewish
+#  audio.views.inc,v 1.2 2008/06/03 19:04:10 drewish
+#  audio_image.inc,v 1.9 2008/05/26 17:30:40 drewish
+#  audio.info,v 1.8 2008/05/25 17:21:26 drewish
+#  audio_attach.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_feeds.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_import.info,v 1.5 2008/05/25 17:21:27 drewish
+#  audio_itunes.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_playlist.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_getid3.info,v 1.2 2008/06/10 05:23:28 drewish
+#  audio_images.info,v 1.1 2008/05/26 17:26:13 drewish
+#  audio.install,v 1.20 2008/05/25 17:21:26 drewish
+#  audio_attach.module,v 1.9 2008/05/25 17:21:27 drewish
+#  audio_feeds.module,v 1.5 2008/05/25 17:21:27 drewish
+#  audio_attach.install,v 1.4 2008/05/25 17:21:27 drewish
+#  audio_feeds_views.inc,v 1.10 2008/05/25 17:21:27 drewish
+#  audio_import.module,v 1.8 2008/05/25 17:21:27 drewish
+#  audio_itunes.module,v 1.6 2008/05/25 17:21:27 drewish
+#  audio_itunes.install,v 1.2 2008/05/25 17:21:27 drewish
+#  audio_playlist.module,v 1.5 2008/05/25 17:21:27 drewish
+#  audio_images.admin.inc,v 1.1 2008/05/26 17:26:13 drewish
+#  audio_images.install,v 1.1 2008/05/26 17:26:13 drewish
+#  1pixelout.inc,v 1.4 2007/07/31 03:17:23 drewish
+#  button.inc,v 1.7 2008/01/23 04:35:00 drewish
+#  xspf_extended.inc,v 1.6 2008/01/23 04:35:00 drewish
+#  xspf_slim.inc,v 1.5 2007/07/31 03:17:23 drewish
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: audio uk Ukrainian Translation\n"
+"POT-Creation-Date: 2009-05-23 15:04+0300\n"
+"PO-Revision-Date: 2009-05-23 15:06+0300\n"
+"Last-Translator: Andriy Podanenko <podarok@ua.fm>\n"
+"Language-Team: uk <podarok@ua.fm>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: Ukrainian\n"
+"X-Poedit-Country: UKRAINE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: audio.admin.inc:10
+msgid "Default node title format"
+msgstr "Головний формат заголовка"
+
+#: audio.admin.inc:13
+msgid "The audio node's title can use the file's metadata as variables. This will be used as the default title for all new audio nodes. By using the tokens listed below, you can automatically create titles from things like a song's artist or title. <strong>Note:</strong> the node title is escaped so it is safe to use the -raw tokens."
+msgstr ""
+
+#: audio.admin.inc:17
+msgid "Node teaser format"
+msgstr "Формат короткого поля"
+
+#: audio.admin.inc:20
+msgid "Use this setting to customize the teasers for audio nodes. Using the tokens listed below you can select what information about the file will be displayed. <strong>Note: the teaser is not escaped so it is unsafe to use the -raw tokens.</strong>"
+msgstr ""
+
+#: audio.admin.inc:23
+msgid "List of available tokens"
+msgstr "Список доступних токенів"
+
+#: audio.admin.inc:27
+msgid "This is a list of the tokens that can be used in the titles and teasers of audio nodes."
+msgstr ""
+
+#: audio.admin.inc:32
+msgid "Permitted audio file extensions"
+msgstr "Дозволені розширення файлів звуку"
+
+#: audio.admin.inc:35
+msgid "Audio file extensions that users can upload. Separate extensions with a space and do not include a leading dot."
+msgstr ""
+
+#: audio.admin.inc:39
+msgid "Downloadable by default"
+msgstr "Закачуване за замовчуванням"
+
+#: audio.admin.inc:41
+msgid "Check this to make downloadable the default setting for new audio nodes. You should be aware that even when audio is not marked as downloadable, clever users can still download it, this just makes the work harder. "
+msgstr ""
+
+#: audio.admin.inc:50
+msgid "Raw tokens are not allowed."
+msgstr "Необроблені токени недозволені."
+
+#: audio.admin.inc:140
+msgid "Reset to defaults"
+msgstr "Скинути за замовчуванням"
+
+#: audio.admin.inc:142
+msgid "The configuration options have been reset to their default values."
+msgstr "Налаштування повернуто до їх стандартних (default) значень."
+
+#: audio.admin.inc:173
+msgid "The configuration options have been saved."
+msgstr "Налаштування запам'ятовано."
+
+#: audio.admin.inc:196
+msgid "Tag"
+msgstr "Таг"
+
+#: audio.admin.inc:196
+msgid "Autocompleted"
+msgstr "Автодоповнено"
+
+#: audio.admin.inc:196
+msgid "Required"
+msgstr "Обов'язковий"
+
+#: audio.admin.inc:196
+msgid "Hidden"
+msgstr "Сховано"
+
+#: audio.admin.inc:196
+msgid "Browsable"
+msgstr "Проглядовуване"
+
+#: audio.admin.inc:197
+msgid "Written to file"
+msgstr "Записано в файл"
+
+#: audio.admin.inc:197
+msgid "Weight"
+msgstr "Вага"
+
+#: audio.admin.inc:197
+#: images/audio_images.module:128
+msgid "Delete"
+msgstr "Стерти"
+
+#: audio.admin.inc:216;242
+msgid "Description"
+msgstr "Опис"
+
+#: audio.admin.inc:221;226
+msgid "URL"
+msgstr "Посилання"
+
+#: audio.admin.inc:232;242
+msgid "Player"
+msgstr "Програвач"
+
+#: audio.admin.inc:242
+msgid "Homepage"
+msgstr "Домашня сторінка"
+
+#: audio.admin.inc:244
+msgid "%format files"
+msgstr "%format файлів"
+
+#: audio.admin.inc:251
+msgid "Link"
+msgstr "Посилання"
+
+#: audio.theme.inc:26
+#: audio.module:681
+#: getid3/audio_getid3.module:74
+msgid "Length"
+msgstr "Тривалість"
+
+#: audio.theme.inc:27
+#: audio.module:670
+#: getid3/audio_getid3.module:64
+msgid "Format"
+msgstr "Формат"
+
+#: audio.theme.inc:71
+msgid "@filesize"
+msgstr "@filesize"
+
+#: audio.theme.inc:75
+msgid "@playtime minutes (@filesize)"
+msgstr "@playtime хвилин (@filesize)"
+
+#: audio.views.inc:23;73
+msgid "Audio: Play count"
+msgstr "Звук: прослухано разів"
+
+#: audio.views.inc:25
+msgid "This will display the number of times this has been played."
+msgstr ""
+
+#: audio.views.inc:28;77
+msgid "Audio: Download count"
+msgstr "Звук: стягнуто разів"
+
+#: audio.views.inc:30
+msgid "This will display the number of times this has been downloaded."
+msgstr ""
+
+#: audio.views.inc:33
+msgid "Audio: Length"
+msgstr "Звук: Тривалість"
+
+#: audio.views.inc:35
+msgid "This will display the play length of the audio."
+msgstr ""
+
+#: audio.views.inc:38
+msgid "Audio: Player link/flash"
+msgstr "Звук: посилання на плеєр"
+
+#: audio.views.inc:46
+msgid "This will display a flash player/link."
+msgstr ""
+
+#: audio.views.inc:49
+msgid "Audio: Download link"
+msgstr "Звук: посилання на закачку"
+
+#: audio.views.inc:53
+msgid "This will display a download link if the node allows it."
+msgstr ""
+
+#: audio.views.inc:56
+msgid "Audio: File size"
+msgstr "Звук: розмір файлу"
+
+#: audio.views.inc:59
+msgid "This will display the audio file's size."
+msgstr ""
+
+#: audio.views.inc:64
+msgid "Audio: Downloadable"
+msgstr "Звук: закачуваний"
+
+#: audio.views.inc:68;116
+msgid "Filter by whether or not the audio is downloadable. "
+msgstr ""
+
+#: audio.views.inc:74
+msgid "Sort audio nodes by the number of time they've been played."
+msgstr ""
+
+#: audio.views.inc:78
+msgid "Sort audio nodes by the number of time they've been downloaded."
+msgstr ""
+
+#: audio.views.inc:102;109;121
+msgid "Audio: Tag @tag"
+msgstr "Звук: Таг @tag"
+
+#: audio.views.inc:104
+msgid "This will display tag %tag values."
+msgstr ""
+
+#: audio.views.inc:122
+msgid "Sort audio nodes by tag %tag values."
+msgstr ""
+
+#: audio.views.inc:149
+msgid "download audio file"
+msgstr "стягнути файл звуку"
+
+#: audio_image.inc:55
+msgid "Other"
+msgstr "Інше"
+
+#: audio_image.inc:56
+msgid "32x32 pixels 'file icon' (PNG only)"
+msgstr ""
+
+#: audio_image.inc:57
+msgid "Other file icon"
+msgstr ""
+
+#: audio_image.inc:58
+msgid "Cover (front)"
+msgstr ""
+
+#: audio_image.inc:59
+msgid "Cover (back)"
+msgstr ""
+
+#: audio_image.inc:60
+msgid "Leaflet page"
+msgstr ""
+
+#: audio_image.inc:61
+msgid "Media (e.g. label side of CD)"
+msgstr ""
+
+#: audio_image.inc:62
+msgid "Lead artist/lead performer/soloist"
+msgstr ""
+
+#: audio_image.inc:63
+msgid "Artist/performer"
+msgstr "Виконавець/Артист"
+
+#: audio_image.inc:64
+msgid "Conductor"
+msgstr ""
+
+#: audio_image.inc:65
+msgid "Band/Orchestra"
+msgstr ""
+
+#: audio_image.inc:66
+msgid "Composer"
+msgstr "Композитор"
+
+#: audio_image.inc:67
+msgid "Lyricist/text writer"
+msgstr ""
+
+#: audio_image.inc:68
+msgid "Recording Location"
+msgstr ""
+
+#: audio_image.inc:69
+msgid "During recording"
+msgstr ""
+
+#: audio_image.inc:70
+msgid "During performance"
+msgstr ""
+
+#: audio_image.inc:71
+msgid "Movie/video screen capture"
+msgstr ""
+
+#: audio_image.inc:72
+msgid "A bright coloured fish"
+msgstr ""
+
+#: audio_image.inc:73
+msgid "Illustration"
+msgstr "Ілюстрація"
+
+#: audio_image.inc:74
+msgid "Band/artist logotype"
+msgstr ""
+
+#: audio_image.inc:75
+msgid "Publisher/Studio logotype"
+msgstr ""
+
+#: audio.module:10
+msgid "You can browse for audio by any of the following fields."
+msgstr ""
+
+#: audio.module:12
+msgid "The audio module allows users to upload and store audio files on a Drupal site. Audio is an important medium for community communication as the recent rise of the <a href=\"!elink-en-wikipedia-org\">podcast phenomenon</a> demonstrates."
+msgstr ""
+
+#: audio.module:13
+msgid "Users create audio nodes by uploading a file from their computer. They are then able to make changes to the metadata, perhaps adding an artist, or removing the track number. Visitors can download the audio file, view the file's metadata and encoding information, or browse for audio by metadata (artist, title, year, etc). Visitors can even play MP3s within their browser using the <a href=\"!elink-musicplayer-sourceforge-net\">XSPF flash player</a> that is bundled with the module."
+msgstr ""
+
+#: audio.module:14
+msgid "The module uses the <a href=\"!elink-www-getid3-org\">getID3 library</a> to read and write <a href=\"%elink-en-wikipedia-org\">ID3 tag</a> information from the audio file. getID3 can read metadata from a many different audio and video formats giving the audio module a great deal of flexibility."
+msgstr ""
+
+#: audio.module:15
+msgid ""
+"<p>You can:</p>\n"
+"                    <ul>\n"
+"                    <li>add an audio file at <a href=\"!node-add-audio\">create content &gt;&gt; audio</a>.</li>\n"
+"                    <li>see your most recent audio files at <a href=\"!user\">user account</a>.</li>\n"
+"                    <li>see all of the most recently added audio files at <a href=\"!audio\">audio</a>.</li>\n"
+"                    <li>browse for audio by its metadata (artist, album, genre, etc) at <a href=\"!audio-by\">audio &gt;&gt; by</a>.</li>\n"
+"                    <li>enable the <em>latest audio</em>, <em>random audio</em>, and <em>browse for audio</em> blocks at <a href=\"!admin-build-block\">administer &gt;&gt; build &gt;&gt; block</a>.</li>\n"
+"                    <li>administer audio module at <a href=\"!admin-settings-audio\">administer &gt;&gt; site configuration &gt;&gt; audio</a>.</li>\n"
+"                    </ul>"
+msgstr ""
+
+#: audio.module:24
+msgid "For more information please read the configuration and customization handbook <a href=\"!audio\">Audio page</a>."
+msgstr ""
+
+#: audio.module:27
+msgid "The current PHP configuration limits file uploads to %maxsize."
+msgstr ""
+
+#: audio.module:28
+msgid "There are two PHP ini settings, upload_max_filesize and post_max_size, that limit the maximum size of uploads. You can change these settings in the php.ini file or by using a php_value directive in Apache .htaccess file. Consult the PHP documentation for more info."
+msgstr ""
+
+#: audio.module:31
+msgid ""
+"These settings let you determine what metadata the audio module tracks. You can add or remove metadata tags and select how they will be used.\n"
+"        <ul>\n"
+"        <li><em>Autocompleted</em> enables javacript autocompletion of the tag based on existing values.</li>\n"
+"        <li><em>Required</em> forces a user to enter a value</li>\n"
+"        <li><em>Hidden</em> prevents the tag from being listed in the node view</li>\n"
+"        <li><em>Browsable</em> allows users to browse for audio using that tag</li>\n"
+"        <li><em>Written to file</em> indicates that the tag should be saved to the file (this requires getid3 support)</li>\n"
+"        <li><em>Weight</em> determines the order of the tags, lower weights are listed first</li>\n"
+"        <li><em>Delete</em> indicates that you would like to remove the tag from the allowed list</li>\n"
+"        </ul>"
+msgstr ""
+
+#: audio.module:41
+msgid "<strong>Note:</strong> deleting a tag will not remove it from the database or file until the node is saved again."
+msgstr ""
+
+#: audio.module:180;881;1005;61
+#: audio.info:0;0
+#: contrib/attach/audio_attach.info:0
+#: contrib/feeds/audio_feeds.info:0
+#: contrib/import/audio_import.info:0
+#: contrib/itunes/audio_itunes.info:0
+#: contrib/playlist/audio_playlist.info:0
+#: getid3/audio_getid3.info:0
+#: images/audio_images.info:0
+msgid "Audio"
+msgstr "Звук"
+
+#: audio.module:182
+msgid "An audio file. The audio file could be used for adding music, podcasts, or audio clips to your site."
+msgstr ""
+
+#: audio.module:326
+msgid "Download audio file"
+msgstr "Стягнути файл"
+
+#: audio.module:331
+msgid "@download_count downloads"
+msgstr "@download_count стягнуто"
+
+#: audio.module:337
+msgid "@play_count plays"
+msgstr "@play_count прослухало"
+
+#: audio.module:425
+msgid "A file must be provided. If you tried uploading a file, make sure it's less than the upload size limit."
+msgstr ""
+
+#: audio.module:598
+msgid "The title can use the file's metadata. You can use the tokens listed below to insert information into the title. <strong>Note:</strong> the node title is escaped so it is safe to use the -raw tokens."
+msgstr ""
+
+#: audio.module:602
+msgid "Token list"
+msgstr ""
+
+#: audio.module:606
+msgid "This is a list of the tokens that can be used in the title of audio nodes."
+msgstr ""
+
+#: audio.module:634
+msgid "Audio File Info"
+msgstr "Інформація про файл"
+
+#: audio.module:661
+msgid "Current File"
+msgstr ""
+
+#: audio.module:662
+msgid "No file is attached."
+msgstr ""
+
+#: audio.module:676
+#: getid3/audio_getid3.module:69
+msgid "File Size"
+msgstr "Розмір файлу"
+
+#: audio.module:683
+msgid "The format is hours:minutes:seconds."
+msgstr ""
+
+#: audio.module:687
+#: getid3/audio_getid3.module:79
+msgid "Sample rate"
+msgstr ""
+
+#: audio.module:693
+#: getid3/audio_getid3.module:84
+msgid "Channel mode"
+msgstr "Режим каналів"
+
+#: audio.module:695
+msgid "Stereo"
+msgstr "Стерео"
+
+#: audio.module:695
+msgid "Mono"
+msgstr "Моно"
+
+#: audio.module:699
+#: getid3/audio_getid3.module:89
+msgid "Bitrate"
+msgstr "Бітність"
+
+#: audio.module:704
+#: getid3/audio_getid3.module:94
+msgid "Bitrate mode"
+msgstr "Режим бітності"
+
+#: audio.module:706
+msgid "Constant"
+msgstr "Константа"
+
+#: audio.module:706
+msgid "Variable"
+msgstr "Змінна"
+
+#: audio.module:713
+msgid "Play count"
+msgstr "Лічильник прослуховувань"
+
+#: audio.module:718
+msgid "Download count"
+msgstr "Лічильник закачувань"
+
+#: audio.module:735
+msgid "Add a new audio file"
+msgstr ""
+
+#: audio.module:735
+msgid "Replace this with a new file"
+msgstr ""
+
+#: audio.module:736
+msgid "Click \"Browse...\" to select an audio file to upload. Only files with the following extensions are allowed: %allowed-extensions."
+msgstr ""
+
+#: audio.module:737
+msgid "<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize."
+msgstr ""
+
+#: audio.module:741
+msgid "Allow file downloads."
+msgstr ""
+
+#: audio.module:743
+msgid "If checked, a link will be displayed allowing visitors to download this audio file on to their own computer."
+msgstr ""
+
+#: audio.module:744
+msgid "<strong>WARNING:</strong> even if you leave this unchecked, clever users will be able to find a way to download the file. This just makes them work a little harder to find the link."
+msgstr ""
+
+#: audio.module:752
+msgid "Audio Metadata"
+msgstr ""
+
+#: audio.module:859
+msgid "Track Number"
+msgstr "Номер доріжки"
+
+#: audio.module:861
+msgid "Enter either a single number or fraction here. '1' means that this is the first track on the album, and '1/8' ."
+msgstr ""
+
+#: audio.module:882
+msgid "Listen to @username's recent audio files"
+msgstr ""
+
+#: audio.module:885
+msgid "History"
+msgstr "Історія"
+
+#: audio.module:898
+msgid "audio: Browse by"
+msgstr ""
+
+#: audio.module:913
+msgid "Browse for audio by"
+msgstr ""
+
+#: audio.module:1008
+msgid "Browse by"
+msgstr ""
+
+#: audio.module:1011
+msgid "@tag"
+msgstr "@tag"
+
+#: audio.module:1151
+msgid "Click to play"
+msgstr "Натиснути для прослуховування"
+
+#: audio.module:1536
+msgid "Audio node @tag tag value."
+msgstr ""
+
+#: audio.module:1537
+msgid "Audio node @tag tag value. WARNING - raw user input."
+msgstr ""
+
+#: audio.module:1541
+msgid "Audio node formatted file length information."
+msgstr ""
+
+#: audio.module:1542
+msgid "Audio node formatted file format information."
+msgstr ""
+
+#: audio.module:1545
+msgid "Audio node sample rate, integer e.g. 44100."
+msgstr ""
+
+#: audio.module:1546
+msgid "Audio node channels, e.g. mono, stereo."
+msgstr ""
+
+#: audio.module:1547
+msgid "Audio node bitrate, integer e.g. 19200."
+msgstr ""
+
+#: audio.module:1548
+msgid "Audio node bitrate encoding mode, e.g. vbr, cbr."
+msgstr ""
+
+#: audio.module:1549
+msgid "Audio node play time, minutes:seconds."
+msgstr ""
+
+#: audio.module:1550
+msgid "Audio node file format, e.g. mp3, ogg"
+msgstr ""
+
+#: audio.module:1551
+msgid "Audio node original, uploaded file name."
+msgstr ""
+
+#: audio.module:1552
+msgid "Audio node file path."
+msgstr "Шлях до файлу звуку."
+
+#: audio.module:1553
+msgid "Audio node MIME type."
+msgstr "MIME тип звуку."
+
+#: audio.module:1554
+msgid "Audio node file size, in bytes."
+msgstr ""
+
+#: audio.module:1557
+msgid "Audio node player."
+msgstr ""
+
+#: audio.module:1558
+msgid "Audio node play URL."
+msgstr ""
+
+#: audio.module:1559
+msgid "Audio node download URL."
+msgstr ""
+
+#: audio.module:233
+msgid "administer audio"
+msgstr "адмінка звуку"
+
+#: audio.module:233
+msgid "create audio"
+msgstr "створити звук"
+
+#: audio.module:233
+msgid "edit own audio"
+msgstr "правити свій звук"
+
+#: audio.module:234
+msgid "play audio"
+msgstr "прослуховувати"
+
+#: audio.module:234
+msgid "download audio"
+msgstr "скачувати"
+
+#: audio.module:234
+msgid "view download stats"
+msgstr "проглядати статистику закачувань"
+
+#: audio.module:53
+msgid "Audio settings"
+msgstr "Параметри звуку"
+
+#: audio.module:54
+msgid "Change settings for the audio module."
+msgstr "Змынити параметри модуля звуку."
+
+#: audio.module:66
+msgid "Metadata tags"
+msgstr ""
+
+#: audio.module:72
+msgid "Players"
+msgstr "Програвачі"
+
+#: audio.module:84
+msgid "Browse by..."
+msgstr ""
+
+#: audio.module:90
+msgid "Audio by @tag"
+msgstr ""
+
+#: audio.module:98
+msgid "Audio by @tag @value"
+msgstr ""
+
+#: audio.module:0
+msgid "audio"
+msgstr "звук"
+
+#: audio.install:30
+msgid "Main audio table."
+msgstr ""
+
+#: audio.install:129
+msgid "Extended data about audio files."
+msgstr ""
+
+#: audio.install:369
+msgid "The audio module requires that the <a href=\"http://drupal.org/project/token\">token module</a> be installed. You should install it as soon as possible."
+msgstr ""
+
+#: audio.info:0
+msgid "Allows you to upload and playback audio files."
+msgstr ""
+
+#: contrib/attach/audio_attach.module:16
+msgid "<p>Allows audio files to be attached to any content type.  You can configure which content types by going to admin/content/types.</p>"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:69
+msgid "Attach audio files"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:71
+#: contrib/feeds/audio_feeds.module:38
+msgid "Disabled"
+msgstr "Вимкнено"
+
+#: contrib/attach/audio_attach.module:71
+#: contrib/feeds/audio_feeds.module:38
+msgid "Enabled"
+msgstr "Ввімкнений"
+
+#: contrib/attach/audio_attach.module:72
+msgid "Should this node allows users to attach audio files?"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:85
+msgid "Attached audio files"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:106
+msgid "Existing audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:108
+msgid "Choose an audio file already existing on the server if you do not upload a new one."
+msgstr ""
+
+#: contrib/attach/audio_attach.module:113
+msgid "Upload new audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:114
+msgid "Click \"Browse...\" to select an audio file to upload. <strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize. "
+msgstr ""
+
+#: contrib/attach/audio_attach.module:118
+msgid "Title"
+msgstr "Назва"
+
+#: contrib/attach/audio_attach.module:123
+msgid "Published"
+msgstr "Оприлюднений"
+
+#: contrib/attach/audio_attach.module:126
+msgid "If checked, this audio file will be published to the rest of the site."
+msgstr ""
+
+#: contrib/attach/audio_attach.module:44
+msgid "attach any existing audio file"
+msgstr ""
+
+#: contrib/attach/audio_attach.module:0
+msgid "audio_attach"
+msgstr ""
+
+#: contrib/attach/audio_attach.install:23
+msgid "Attaches an audio node to another node."
+msgstr ""
+
+#: contrib/attach/audio_attach.info:0
+msgid "Audio Attach"
+msgstr ""
+
+#: contrib/attach/audio_attach.info:0
+msgid "Allows audio files to be attached to any node type."
+msgstr ""
+
+#: contrib/feeds/audio_feeds_views.inc:12
+msgid "Audio: XSPF/M3U/PLS Playlist"
+msgstr ""
+
+#: contrib/feeds/audio_feeds_views.inc:150
+msgid "m3u"
+msgstr "m3u"
+
+#: contrib/feeds/audio_feeds_views.inc:152
+msgid "pls"
+msgstr "pls"
+
+#: contrib/feeds/audio_feeds_views.inc:154
+msgid "xspf"
+msgstr "xspf"
+
+#: contrib/feeds/audio_feeds.module:20
+msgid "This module creates XSPF, M3U, and PLS audio feeds."
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:36
+#: contrib/feeds/audio_feeds.info:0
+msgid "Audio Feeds"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:39
+msgid "Should users be allowed to create XSPF, M3U, and PLS feeds of attached audio files?"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:61;104
+msgid "M3U"
+msgstr "M3U"
+
+#: contrib/feeds/audio_feeds.module:63
+msgid "Stream M3U feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:68;110
+msgid "PLS"
+msgstr "PLS"
+
+#: contrib/feeds/audio_feeds.module:70
+msgid "Stream PLS feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:75;98
+msgid "XSPF"
+msgstr "XSPF"
+
+#: contrib/feeds/audio_feeds.module:77
+msgid "Shareable XSPF feed"
+msgstr ""
+
+#: contrib/feeds/audio_feeds.module:0
+msgid "audio_feeds"
+msgstr "audio_feeds"
+
+#: contrib/feeds/audio_feeds.info:0
+msgid "Provide XSPF, PLS, and M3U audio XML feeds."
+msgstr ""
+
+#: contrib/import/audio_import.module:8
+msgid "Import multiple audio files and save them as audio nodes. The files will be moved from their location into the audio module's files directory. "
+msgstr ""
+
+#: contrib/import/audio_import.module:9
+msgid "Searching for files ending with %extensions in %dirpath directory."
+msgstr ""
+
+#: contrib/import/audio_import.module:11
+msgid "The audio_import module allows users with 'administer audio' permission to import audio files and create audio nodes from them. "
+msgstr ""
+
+#: contrib/import/audio_import.module:13
+msgid "Configure the audio import module's settings."
+msgstr ""
+
+#: contrib/import/audio_import.module:44
+msgid "You need to configure the import directory on the audio import module's <a href='!admin-settings-audio_import'>settings page</a>."
+msgstr ""
+
+#: contrib/import/audio_import.module:76;119
+msgid "Import"
+msgstr "Імпортувати"
+
+#: contrib/import/audio_import.module:82
+msgid "No files were found"
+msgstr "Файлів не знайдено"
+
+#: contrib/import/audio_import.module:102
+msgid "Filename"
+msgstr "Ім'я файлу"
+
+#: contrib/import/audio_import.module:134
+msgid "%filename as <a href=\"!node-link\">@node-title</a> <a href=\"!edit-link\">[edit]</a>"
+msgstr "%filename в <a href=\"!node-link\">@node-title</a> <a href=\"!edit-link\">[edit]</a>"
+
+#: contrib/import/audio_import.module:142
+msgid "Error importing %filename."
+msgstr "Помилка імпорту %filename."
+
+#: contrib/import/audio_import.module:152
+msgid "No audio files were imported."
+msgstr ""
+
+#: contrib/import/audio_import.module:161
+msgid "Import path"
+msgstr "Шлях імпорту"
+
+#: contrib/import/audio_import.module:164
+msgid "The directory to import audio nodes from. Drupal will need to have write access to this directory so we can move the file."
+msgstr ""
+
+#: contrib/import/audio_import.module:165
+msgid "<strong>Note:</strong> a path begining with a <kbd>/</kbd> indicates the path is relative to the server's root, one starting without specifies a path relative to Drupal's root. I.e. <kbd>/tmp/audio</kbd> would be the temp directory off the root while <kbd>tmp/audio</kbd> would be inside Drupal's directory."
+msgstr ""
+
+#: contrib/import/audio_import.module:183
+msgid "You can't import from the audio module's directory. The import deletes the original files so you would just be asking for trouble."
+msgstr ""
+
+#: contrib/import/audio_import.module:21
+msgid "Audio import"
+msgstr "Імпорт звуку"
+
+#: contrib/import/audio_import.module:22
+msgid "Import audio from the filesystem."
+msgstr ""
+
+#: contrib/import/audio_import.module:29
+msgid "Audio import settings"
+msgstr ""
+
+#: contrib/import/audio_import.module:30
+msgid "Change settings for the Audio Import module."
+msgstr ""
+
+#: contrib/import/audio_import.module:0
+msgid "audio_import"
+msgstr ""
+
+#: contrib/import/audio_import.info:0
+msgid "Audio Import"
+msgstr "Імпорт Звуку"
+
+#: contrib/import/audio_import.info:0
+msgid "Allows audio module admins to import batches of audio files."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:45
+msgid "iTunes feed information"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:47
+msgid "iTunes specific information."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:53;165
+msgid "Subtitle"
+msgstr "Підзаголовок"
+
+#: contrib/itunes/audio_itunes.module:56;168
+msgid "The contents of this tag are shown in the Description column in iTunes. The subtitle displays best if it is only a few words long."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:60;172
+msgid "Summary"
+msgstr "Звіт"
+
+#: contrib/itunes/audio_itunes.module:64;176
+msgid "The contents of this tag are shown in a separate window that appears when the \"circled i\" in the Description column is clicked. It also appears on the iTunes page for your podcast."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:67;200
+msgid "Explicit"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:70;203
+msgid "If select \"yes\", an \"explicit\" parental advisory graphic will appear next to your podcast artwork on the iTunes Music Store, and in the Name column in iTunes. If you select \"clean\", the parental advisory type is considered Clean, meaning that no explicit language or adult content is included anywhere in the episode, and a \"clean\" graphic will appear."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:73
+msgid "Block"
+msgstr "Блок"
+
+#: contrib/itunes/audio_itunes.module:75
+msgid "Check this to prevent this episode from appearing in the iTunes Podcast directory. For example, you may want a specific episode blocked from iTunes if its content might cause the feed to be removed from iTunes."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:180
+msgid "Author"
+msgstr "Автор"
+
+#: contrib/itunes/audio_itunes.module:183
+msgid "This is shown in the Artist column in iTunes."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:187
+msgid "Copyright"
+msgstr "Права"
+
+#: contrib/itunes/audio_itunes.module:190
+msgid "i.e. \"&#xA9; 2005 John Doe\""
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:194
+msgid "Image URL"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:197
+msgid "This specifies the artwork for your podcast. iTunes prefers square .jpg images that are at least 300 x 300 pixels, which is different than what is specified for the standard RSS image tag. iTunes supports images in JPEG and PNG formats. The URL must end in \".jpg\" or \".png\". If you change your podcast’s image, also change the file’s name. iTunes may not change the image if it checks your feed and the image URL is the same."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:206
+msgid "Hide"
+msgstr "Приховати"
+
+#: contrib/itunes/audio_itunes.module:208
+msgid "Check this to prevent the entire podcast from appearing in the iTunes Podcast directory."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:212
+msgid "Owner"
+msgstr "Власник"
+
+#: contrib/itunes/audio_itunes.module:215
+msgid "Apple uses this information to contact the owner of the podcast for communication specifically about their podcast. It will not be publicly displayed but it may be picked up by spammers."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:219
+msgid "Name"
+msgstr "Ім'я"
+
+#: contrib/itunes/audio_itunes.module:225
+msgid "Email"
+msgstr "Пошта"
+
+#: contrib/itunes/audio_itunes.module:231
+msgid "Save"
+msgstr "Зберегти"
+
+#: contrib/itunes/audio_itunes.module:239
+msgid "The image URL must be a valid URL."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:245
+msgid "The URL must specify a file ending with <code>.jpg</code> or <code>.png</code>."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:250
+msgid "The owner email must be a valid email address."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:302
+msgid "Views RSS: iTunes RSS feed"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:318
+msgid "iTunes RSS: RSS Feed Selector"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:321
+msgid "This argument specifies a specific RSS feed selector; it will only select RSS feeds, unlike the built-in selector which can select pluggable feeds. You may enter the title the feed will advertise in the title field here, and the description of the feed in the option field here."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.module:473
+msgid "read more"
+msgstr "докладніше"
+
+#: contrib/itunes/audio_itunes.module:26
+msgid "iTunes"
+msgstr "iTunes"
+
+#: contrib/itunes/audio_itunes.module:0
+msgid "audio_itunes"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.install:24
+msgid "Audio iTunes channel."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.install:89
+msgid "Audio iTunes item."
+msgstr ""
+
+#: contrib/itunes/audio_itunes.info:0
+msgid "Audio iTunes"
+msgstr ""
+
+#: contrib/itunes/audio_itunes.info:0
+msgid "An iTunes specific RSS plugin for views feeds."
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:16
+msgid "This module provides a quick method of adding audio files to other nodes (that allow audio attachments)."
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:32;35;113
+msgid "Add to playlist"
+msgstr "Додати до списку"
+
+#: contrib/playlist/audio_playlist.module:71
+msgid "audio attachments enabled"
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:88
+msgid "Audio file"
+msgstr "Файл звуку"
+
+#: contrib/playlist/audio_playlist.module:100
+msgid "Select audio file"
+msgstr "Обрати файл звуку"
+
+#: contrib/playlist/audio_playlist.module:102
+msgid "Choose an audio file to add to a playlist."
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:108
+msgid "Add to playlist(s)"
+msgstr "Додати до списку"
+
+#: contrib/playlist/audio_playlist.module:110
+msgid "Select which playlists you want to add this file to."
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:48
+msgid "attach audio to own playlists"
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:49
+msgid "attach audio to any playlist"
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:60
+msgid "Add audio file to a playlist"
+msgstr ""
+
+#: contrib/playlist/audio_playlist.module:0
+msgid "audio_playlist"
+msgstr "audio_playlist"
+
+#: contrib/playlist/audio_playlist.info:0
+msgid "Audio Playlist"
+msgstr "Список програвання звуку"
+
+#: contrib/playlist/audio_playlist.info:0
+msgid "Provide 'Add to playlist' link to audio content."
+msgstr ""
+
+#: getid3/audio_getid3.module:47
+msgid "This file information was loaded from the file by the getID3 library."
+msgstr ""
+
+#: getid3/audio_getid3.module:70
+msgid "@filesize bytes"
+msgstr "@filesize байт"
+
+#: getid3/audio_getid3.module:80
+msgid "@samplerate Hz"
+msgstr "@samplerate Гц"
+
+#: getid3/audio_getid3.module:90
+msgid "@bitrate bytes/second"
+msgstr "@bitrate байт/сек"
+
+#: getid3/audio_getid3.module:106
+msgid "This file is not compatible with the Flash audio player. Flash can only play MP3 files with a sample rate of 11, 22 or 44KHz."
+msgstr ""
+
+#: getid3/audio_getid3.module:197
+msgid "While reading the ID3 tags, the following warnings were encountered:"
+msgstr ""
+
+#: getid3/audio_getid3.module:203
+msgid "The following errors where encountered while reading the file's ID3 tags: "
+msgstr ""
+
+#: getid3/audio_getid3.module:273
+msgid "While writing the ID3 tags, the following warnings were encountered:"
+msgstr ""
+
+#: getid3/audio_getid3.module:278
+msgid "The following errors were encountered, preventing the ID3 tags from being saved:"
+msgstr ""
+
+#: getid3/audio_getid3.module:0
+msgid "audio_getid3"
+msgstr ""
+
+#: getid3/audio_getid3.info:0
+msgid "Audio getID3"
+msgstr ""
+
+#: getid3/audio_getid3.info:0
+msgid "Adds the ability to read artist info from and write to audio files. Requires that the getID3 library be installed."
+msgstr ""
+
+#: images/audio_images.admin.inc:10
+msgid "Image size"
+msgstr "Розмір фото"
+
+#: images/audio_images.admin.inc:19
+msgid "The size (in pixels) that the theme will display the images. Default is <em>170x170</em>."
+msgstr ""
+
+#: images/audio_images.admin.inc:23
+msgid "Default image type"
+msgstr ""
+
+#: images/audio_images.admin.inc:26
+msgid "Select the image type you would like displayed. <strong>NOTE:</strong> If an audio node does not have an image of this type associated with it, a random image will be chosen."
+msgstr ""
+
+#: images/audio_images.module:75
+#: images/audio_images.info:0
+msgid "Audio Images"
+msgstr "Аудіо Фото"
+
+#: images/audio_images.module:77
+msgid "Cover art or other images."
+msgstr ""
+
+#: images/audio_images.module:98
+msgid "New image type"
+msgstr "Новий тип фото"
+
+#: images/audio_images.module:104
+msgid "Add a new image"
+msgstr "Додати нове фото"
+
+#: images/audio_images.module:106
+msgid "Click \"Browse...\" to select an image to add to this audio file. <strong>NOTE:</strong> Supported image types include GIF, JPG, and PNG.  Suggested dimensions: 170 X 170 pixels."
+msgstr ""
+
+#: images/audio_images.module:128
+msgid "Type"
+msgstr "Тип"
+
+#: images/audio_images.module:128
+msgid "MIME Type"
+msgstr "MIME Тип"
+
+#: images/audio_images.module:128
+msgid "Dimensions"
+msgstr "Розміри"
+
+#: images/audio_images.module:128
+msgid "Size"
+msgstr "Розмір"
+
+#: images/audio_images.module:12
+msgid "Images"
+msgstr "Фото"
+
+#: images/audio_images.module:0
+msgid "audio_images"
+msgstr ""
+
+#: images/audio_images.install:20
+msgid "Associates an image (such as album artwork) with an audio file."
+msgstr ""
+
+#: images/audio_images.info:0
+msgid "Adds the ability to attach album art to audio nodes."
+msgstr ""
+
+#: players/1pixelout.inc:7
+msgid "1pixelout Flash player"
+msgstr ""
+
+#: players/1pixelout.inc:8
+msgid "Written by Martin Laine as part of the Wordpress Audio Player plugin."
+msgstr "Написаний Martin Laine як частина Wordpress Audio Player додатку."
+
+#: players/1pixelout.inc:9
+msgid "http://www.1pixelout.net/code/audio-player-wordpress-plugin/"
+msgstr "http://www.1pixelout.net/code/audio-player-wordpress-plugin/"
+
+#: players/button.inc:7
+msgid "XSPF Web Music Player - Button"
+msgstr "XSPF Web Music Програвач  - Кнопка"
+
+#: players/button.inc:8
+msgid "Cute button player..."
+msgstr "Мала кнопка програвача..."
+
+#: players/button.inc:9
+#: players/xspf_extended.inc:9
+#: players/xspf_slim.inc:9
+msgid "http://musicplayer.sourceforge.net/"
+msgstr "http://musicplayer.sourceforge.net/"
+
+#: players/xspf_extended.inc:7
+msgid "XSPF Web Music Player - Extended"
+msgstr "XSPF Web Music Програвач - Розширений"
+
+#: players/xspf_extended.inc:8
+msgid "Extended version 0.2.3"
+msgstr "Extended версія 0.2.3"
+
+#: players/xspf_slim.inc:7
+msgid "XSPF Web Music Player - Slim"
+msgstr "XSPF Web Music Програвач - Малий"
+
+#: players/xspf_slim.inc:8
+msgid "Slim version 0.2.3"
+msgstr "Slim версія 0.2.3"
+

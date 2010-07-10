@@ -1,0 +1,19 @@
+Audio module dependencies
+---------------------------
+ * Drupal 6.x
+ * getID3() module (http://drupal.org/project/getid3)
+ * Token module (http://drupal.org/project/token)
+ * Views module (http://drupal.org/project/views) 
+
+To install the audio module
+---------------------------
+
+1. Install and enable the required modules: getID3(), Token and Views.
+
+2. Extract the "audio" module directory, including all its subdirectories, into
+   your sites/all/modules directory.
+ 
+3. Enable the audio, audio_getid3 and audio_image modules on the
+   admin >> build >> modules page. Also enable any other parts of the Audio module you wish.
+   The database tables will be created for you automatically.
+

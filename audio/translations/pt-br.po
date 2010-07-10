@@ -1,0 +1,717 @@
+# $Id: pt-br.po,v 1.2 2009/02/16 04:53:11 fernao Exp $
+#
+# LANGUAGE translation of Drupal (root)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  audio.admin.inc,v 1.1 2008/05/25 23:10:50 drewish
+#  audio.theme.inc,v 1.1 2008/05/25 23:10:50 drewish
+#  audio.views.inc,v 1.2 2008/06/03 19:04:10 drewish
+#  audio_image.inc,v 1.9 2008/05/26 17:30:40 drewish
+#  audio.module,v 1.139 2008/09/06 19:41:27 drewish
+#  audio.info,v 1.8 2008/05/25 17:21:26 drewish
+#  audio_attach.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_feeds.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_import.info,v 1.5 2008/05/25 17:21:27 drewish
+#  audio_itunes.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_playlist.info,v 1.3 2008/05/25 17:21:27 drewish
+#  audio_getid3.info,v 1.2 2008/06/10 05:23:28 drewish
+#  audio_images.info,v 1.1 2008/05/26 17:26:13 drewish
+#  audio.install,v 1.22 2008/08/14 20:42:04 mfb
+#  + merged with the general.pot
+#  + merget with the players.pot
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-09-20 22:44+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: fernao <fernao@riseup.net>\n"
+"Language-Team: Brazilian Portuguese <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+
+#: audio.admin.inc:10
+msgid "Default node title format"
+msgstr "Formato padrão do título do nó"
+
+#: audio.admin.inc:13
+msgid "The audio node's title can use the file's metadata as variables. This will be used as the default title for all new audio nodes. By using the tokens listed below, you can automatically create titles from things like a song's artist or title. <strong>Note:</strong> the node title is escaped so it is safe to use the -raw tokens."
+msgstr "O título do nó de áudio pode usar metadados do arquivo como variáveis. Isso será usado por padrão como título padrão para todos os novos nós de áudio. Usando a lista de tokens abaixo, você pode automaticamente criar títulos a partir de coisas como nome do autor ou da música. <strong>Atenção:</strong> o título do nó é escapado; logo é seguro utilizar tokens -raw."
+
+#: audio.admin.inc:17
+msgid "Node teaser format"
+msgstr "Formato da chamada do nó"
+
+#: audio.admin.inc:20
+msgid "Use this setting to customize the teasers for audio nodes. Using the tokens listed below you can select what information about the file will be displayed. <strong>Note: the teaser is not escaped so it is unsafe to use the -raw tokens.</strong>"
+msgstr "Use essa configuração para personalizar chamadas para nós de áudio. Usando os tokens listados abaixo você pode selecionar que informação sobre o arquivo será exibida. <strong>Atenção: a chamada não é escapada; logo é inseguro utilizar os tokens brutos (-raw).</strong>"
+
+#: audio.admin.inc:23
+msgid "List of available tokens"
+msgstr "Lista de tokens disponíveis"
+
+#: audio.admin.inc:27
+msgid "This is a list of the tokens that can be used in the titles and teasers of audio nodes."
+msgstr "Essa é uma lista de tokens que podem ser usados nos títulos e chamadas dos nós de áudio."
+
+#: audio.admin.inc:32
+msgid "Permitted audio file extensions"
+msgstr "Extensões de áudio permitidas"
+
+#: audio.admin.inc:35
+msgid "Audio file extensions that users can upload. Separate extensions with a space and do not include a leading dot."
+msgstr "Extensões de arquivos áudio que usuári@s podem subir. Separe as extensões com um espaço e não inclua o ponto."
+
+#: audio.admin.inc:39
+msgid "Downloadable by default"
+msgstr "Baixável por padrão"
+
+#: audio.admin.inc:41
+msgid "Check this to make downloadable the default setting for new audio nodes. You should be aware that even when audio is not marked as downloadable, clever users can still download it, this just makes the work harder. "
+msgstr "Marque aqui para tornar baixável a configuração padrão para novos nós de áudio. Você deve estar ciente que mesmo quando o áudio não estiver marcado como baixável, usuári@s espertos continuarão podendo baixá-los e que isso é apenas para dificultar seu trabalho."
+
+#: audio.admin.inc:50
+msgid "Raw tokens are not allowed."
+msgstr "Tokens brutos (-raw) não são permitidos."
+
+#: audio.admin.inc:140
+msgid "Reset to defaults"
+msgstr "Restaurar valores padrão"
+
+#: audio.admin.inc:142
+msgid "The configuration options have been reset to their default values."
+msgstr "As opções de configuração foram restauradas para seus valores padrão."
+
+#: audio.admin.inc:173
+msgid "The configuration options have been saved."
+msgstr "As opções de configuração foram gravadas."
+
+#: audio.admin.inc:196
+msgid "Tag"
+msgstr "Tag"
+
+#: audio.admin.inc:196
+msgid "Autocompleted"
+msgstr "Auto-completado"
+
+#: audio.admin.inc:196
+msgid "Required"
+msgstr "Requerido"
+
+#: audio.admin.inc:196
+msgid "Hidden"
+msgstr "Escondido"
+
+#: audio.admin.inc:196
+msgid "Browsable"
+msgstr "Navegável"
+
+#: audio.admin.inc:197
+msgid "Written to file"
+msgstr "Escrito no arquivo"
+
+#: audio.admin.inc:197
+msgid "Weight"
+msgstr "Peso"
+
+#: audio.admin.inc:216;242
+msgid "Description"
+msgstr "Descrição"
+
+#: audio.admin.inc:221;226
+msgid "URL"
+msgstr "URL"
+
+#: audio.admin.inc:232;242
+msgid "Player"
+msgstr "Tocador"
+
+#: audio.admin.inc:242
+msgid "Homepage"
+msgstr "Página de internet"
+
+#: audio.admin.inc:244
+msgid "%format files"
+msgstr "arquivos %format"
+
+#: audio.admin.inc:251
+msgid "Link"
+msgstr "Link"
+
+#: audio.theme.inc:71
+msgid "@filesize"
+msgstr "@filesize"
+
+#: audio.theme.inc:75
+msgid "@playtime minutes (@filesize)"
+msgstr "@playtime minutos (@filesize)"
+
+#: audio.views.inc:23;73
+msgid "Audio: Play count"
+msgstr "Áudio: Contagem de execuções"
+
+#: audio.views.inc:25
+msgid "This will display the number of times this has been played."
+msgstr "Isso mostrará o número de vezes que este foi executado."
+
+#: audio.views.inc:28;77
+msgid "Audio: Download count"
+msgstr "Áudio: Contagem de downloads"
+
+#: audio.views.inc:30
+msgid "This will display the number of times this has been downloaded."
+msgstr "Isso mostrará o número de vezes que foi baixado."
+
+#: audio.views.inc:33
+msgid "Audio: Length"
+msgstr "Áudio: Duração"
+
+#: audio.views.inc:35
+msgid "This will display the play length of the audio."
+msgstr "Isso mostrará a duração do áudio."
+
+#: audio.views.inc:38
+msgid "Audio: Player link/flash"
+msgstr "Áudio: Tocador link/flash"
+
+#: audio.views.inc:46
+msgid "This will display a flash player/link."
+msgstr "Isso exibirá  um tocador/link flash."
+
+#: audio.views.inc:49
+msgid "Audio: Download link"
+msgstr "Áudio: Link para download"
+
+#: audio.views.inc:53
+msgid "This will display a download link if the node allows it."
+msgstr "Isso exibirá um link para download se o nó permitir."
+
+#: audio.views.inc:56
+msgid "Audio: File size"
+msgstr "Áudio: Tamanho do arquivo"
+
+#: audio.views.inc:59
+msgid "This will display the audio file's size."
+msgstr "Isso mostrará o tamanho do áudio."
+
+#: audio.views.inc:64
+msgid "Audio: Downloadable"
+msgstr "Áudio: Baixável"
+
+#: audio.views.inc:68;116
+msgid "Filter by whether or not the audio is downloadable. "
+msgstr "Filtrar por se é baixável ou não."
+
+#: audio.views.inc:74
+msgid "Sort audio nodes by the number of time they've been played."
+msgstr "Ordenar os nós de áudios pelo número de vezes que foram executados."
+
+#: audio.views.inc:78
+msgid "Sort audio nodes by the number of time they've been downloaded."
+msgstr "Ordenar os nós de áudios pelo número de vezes que foram baixados."
+
+#: audio.views.inc:102;109;121
+msgid "Audio: Tag @tag"
+msgstr "Áudio: Tag @tag"
+
+#: audio.views.inc:104
+msgid "This will display tag %tag values."
+msgstr "Isso mostrará os valores da tag %tag."
+
+#: audio.views.inc:122
+msgid "Sort audio nodes by tag %tag values."
+msgstr "Ordenar nós de áudio por valores de tag %tag."
+
+#: audio.views.inc:149
+msgid "download audio file"
+msgstr "baixar arquivo de áudio"
+
+#: audio_image.inc:55
+msgid "Other"
+msgstr "Outro"
+
+#: audio_image.inc:56
+msgid "32x32 pixels 'file icon' (PNG only)"
+msgstr "'arquivo de ícone' de 32x32 pixels (apenas PNG)"
+
+#: audio_image.inc:57
+msgid "Other file icon"
+msgstr "Outro arquivo de ícone"
+
+#: audio_image.inc:58
+msgid "Cover (front)"
+msgstr "Capa (frente)"
+
+#: audio_image.inc:59
+msgid "Cover (back)"
+msgstr "Capa (atrás)"
+
+#: audio_image.inc:60
+msgid "Leaflet page"
+msgstr "Encarte"
+
+#: audio_image.inc:61
+msgid "Media (e.g. label side of CD)"
+msgstr "Mídia (ex: lado de imagem do CD)"
+
+#: audio_image.inc:62
+msgid "Lead artist/lead performer/soloist"
+msgstr "Artista principal/executor/a principal/solista"
+
+#: audio_image.inc:63
+msgid "Artist/performer"
+msgstr "Artista/grupo"
+
+#: audio_image.inc:64
+msgid "Conductor"
+msgstr "Condutor"
+
+#: audio_image.inc:65
+msgid "Band/Orchestra"
+msgstr "Banda/Orquestra"
+
+#: audio_image.inc:66
+msgid "Composer"
+msgstr "Compositor/a"
+
+#: audio_image.inc:67
+msgid "Lyricist/text writer"
+msgstr "Letrista"
+
+#: audio_image.inc:68
+msgid "Recording Location"
+msgstr "Local de gravação"
+
+#: audio_image.inc:69
+msgid "During recording"
+msgstr "Durante a gravação..."
+
+#: audio_image.inc:70
+msgid "During performance"
+msgstr "Durante apresentação..."
+
+#: audio_image.inc:71
+msgid "Movie/video screen capture"
+msgstr "Vídeo"
+
+#: audio_image.inc:72
+msgid "A bright coloured fish"
+msgstr "A bright coloured fish"
+
+#: audio_image.inc:73
+msgid "Illustration"
+msgstr "Ilustração"
+
+#: audio_image.inc:74
+msgid "Band/artist logotype"
+msgstr "Logomarca da banda/grupo"
+
+#: audio_image.inc:75
+msgid "Publisher/Studio logotype"
+msgstr "Logomarca do estúdio/produtora"
+
+#: audio.module:10
+msgid "You can browse for audio by any of the following fields."
+msgstr "Você pode buscar por áudios por quaalquer um dos seguintes campos."
+
+#: audio.module:12
+msgid "The audio module allows users to upload and store audio files on a Drupal site. Audio is an important medium for community communication as the recent rise of the <a href=\"!elink-en-wikipedia-org\">podcast phenomenon</a> demonstrates."
+msgstr "O módulo áudio permite que usuários/as subam e guardem arquivos de áudio em um sítio drupal. O áudio é um importante meio para comunicação em comunidade como a recente ascensão do <a href=\"!elink-en-wikipedia-org\">ferômeno podcast</a> demonstra."
+
+#: audio.module:13
+msgid "Users create audio nodes by uploading a file from their computer. They are then able to make changes to the metadata, perhaps adding an artist, or removing the track number. Visitors can download the audio file, view the file's metadata and encoding information, or browse for audio by metadata (artist, title, year, etc). Visitors can even play MP3s within their browser using the <a href=\"!elink-musicplayer-sourceforge-net\">XSPF flash player</a> that is bundled with the module."
+msgstr "Usuários/as criam nós de áudio subindo arquivos a partir de seus computadores. São então capazes de realizar alterações nos metadados, talvez adicionando um artista ou removendo o número da faixa. Visitantes podem baixar o arquivo de áudio, ver os metadados do arquivo e informação codificada, ou procurar por áudio por metadados (artista, título, ano etc). Visitantes podem também tocar MP#s em seu navegador utilizando o <a href=\"!elink-musicplayer-sourceforge-net\">tocador flash XSPF</a> que vem embutido com o módulo."
+
+#: audio.module:14
+msgid "The module uses the <a href=\"!elink-www-getid3-org\">getID3 library</a> to read and write <a href=\"%elink-en-wikipedia-org\">ID3 tag</a> information from the audio file. getID3 can read metadata from a many different audio and video formats giving the audio module a great deal of flexibility."
+msgstr "O módulo utiliza a <a href=\"!elink-www-getid3-org\">biblioteca getID3</a> para ler e escrever a <a href=\"%elink-en-wikipedia-org\">tag ID3</a> de informação a partir do arquivo de áudio. O getID3 pode ler metadados de muitos diferentes formatos de áudio e vídeo, dando ao módulo uma grande flexibilidade."
+
+#: audio.module:15
+msgid "<p>You can:</p>\n                    <ul>\n                    <li>add an audio file at <a href=\"!node-add-audio\">create content &gt;&gt; audio</a>.</li>\n                    <li>see your most recent audio files at <a href=\"!user\">user account</a>.</li>\n                    <li>see all of the most recently added audio files at <a href=\"!audio\">audio</a>.</li>\n                    <li>browse for audio by its metadata (artist, album, genre, etc) at <a href=\"!audio-by\">audio &gt;&gt; by</a>.</li>\n                    <li>enable the <em>latest audio</em>, <em>random audio</em>, and <em>browse for audio</em> blocks at <a href=\"!admin-build-block\">administer &gt;&gt; build &gt;&gt; block</a>.</li>\n                    <li>administer audio module at <a href=\"!admin-settings-audio\">administer &gt;&gt; site configuration &gt;&gt; audio</a>.</li>\n                    </ul>"
+msgstr "<p>Você pode:</p>\n                    <ul>\n                    <li>adicionar um arquivo de áudio em <a href=\"!node-add-audio\">criar conteúdo &gt;&gt; áudio</a>.</li>\n                    <li>veja seus arquivos de áudio mais recentes em <a href=\"!user\">minha conta</a>.</li>\n                    <li>veja todos os mais recentes arquivos de áudio adicionados em <a href=\"!audio\">áudio</a>.</li>\n                    <li>procure pelos blocos de áudio por seus metadados (artista, álbum, gênero etc) em <a href=\"!audio-by\">áudio &gt;&gt; by</a>.</li>\n                    <li>habilite o <em>último áudio</em>, <em>áudio aleatório</em>, e <em>procure por áudio</em> em <a href=\"!admin-build-block\">administrar &gt;&gt; construção do site &gt;&gt; blocos</a>.</li>\n                    <li>administre o módulo áudio em <a href=\"!admin-settings-audio\">administrar &gt;&gt; configuração do site;&gt; áudio</a>.</li>\n                    </ul>"
+
+#: audio.module:24
+msgid "For more information please read the configuration and customization handbook <a href=\"!audio\">Audio page</a>."
+msgstr "Para mais informações por favor leia o manual de configuração e personinalização <a href=\"!audio\">Página de áudio</a>."
+
+#: audio.module:27
+msgid "The current PHP configuration limits file uploads to %maxsize."
+msgstr "A atual configuração do PHP limita o envio de arquivos a %maxsize."
+
+#: audio.module:28
+msgid "There are two PHP ini settings, upload_max_filesize and post_max_size, that limit the maximum size of uploads. You can change these settings in the php.ini file or by using a php_value directive in Apache .htaccess file. Consult the PHP documentation for more info."
+msgstr "Existem duas configurações de PHP, upload_max_filesize e post_max_size, que limitam o tamanho dos arquivos enviados. Você pode alterar essas configurações no php.ini ou utilizar uma diretiva php_value no arquivo .htaccess do Apache. Consulte a documentação do PHP para mais informações."
+
+#: audio.module:31
+msgid "These settings let you determine what metadata the audio module tracks. You can add or remove metadata tags and select how they will be used.\n        <ul>\n        <li><em>Autocompleted</em> enables javacript autocompletion of the tag based on existing values.</li>\n        <li><em>Required</em> forces a user to enter a value</li>\n        <li><em>Hidden</em> prevents the tag from being listed in the node view</li>\n        <li><em>Browsable</em> allows users to browse for audio using that tag</li>\n        <li><em>Written to file</em> indicates that the tag should be saved to the file (this requires getid3 support)</li>\n        <li><em>Weight</em> determines the order of the tags, lower weights are listed first</li>\n        <li><em>Delete</em> indicates that you would like to remove the tag from the allowed list</li>\n        </ul>"
+msgstr "Essas configurações permitem que você determine quais metadados serão extraídos pelo módulo de áudio. Você pode adicionar ou remover tags de metadados e selecionar como eles serão usados.\n        <ul>\n        <li><em>Auto-completar</em> habilita que as tags sejam auto-completas via javacript, baseado em valores já existentes.</li>\n        <li><em>Requerido</em> obriga o/a usuário/a a preencher um valor</li>\n        <li><em>Escondido</em> previne a tag de ser listada na view do nó</li>\n        <li><em>Navegável</em> permite usuários/as navegarem e buscarem por áudio utilizando tags</li>\n        <li><em>Escrito no arquivo</em> indica que a tag deve ser salva no arquivo (requer suporte getid3)</li>\n        <li><em>Peso</em> determina a ordem das tags, menores pesos são listados primeiro</li>\n        <li><em>Apagar</em> indica que você quer remover a tag da lista de tags permitidas</li>\n        </ul>"
+
+#: audio.module:41
+msgid "<strong>Note:</strong> deleting a tag will not remove it from the database or file until the node is saved again."
+msgstr "<strong>Atenção:</strong> apagar a tag não irá removê-la do banco de dados até que o nó seja salvo novamente."
+
+#: audio.module:184;885;1009;61 audio.info:0;0 contrib/attach/audio_attach.info:0 contrib/feeds/audio_feeds.info:0 contrib/import/audio_import.info:0 contrib/itunes/audio_itunes.info:0 contrib/playlist/audio_playlist.info:0 getid3/audio_getid3.info:0 images/audio_images.info:0
+msgid "Audio"
+msgstr "Áudio"
+
+#: audio.module:186
+msgid "An audio file. The audio file could be used for adding music, podcasts, or audio clips to your site."
+msgstr "Um arquivo de áudio. O arquivo de áudio pode ser utilizado para adicionar música, podcast ou clipes ao seu site."
+
+#: audio.module:330
+msgid "Download audio file"
+msgstr "Baixar áudio"
+
+#: audio.module:335
+msgid "@download_count downloads"
+msgstr "@download_count downloads"
+
+#: audio.module:341
+msgid "@play_count plays"
+msgstr "tocado @play_count vezes"
+
+#: audio.module:429
+msgid "A file must be provided. If you tried uploading a file, make sure it's less than the upload size limit."
+msgstr "Um arquivo deve ser fornecido. Se você tentou subir um arquivo, certifique-se do limite de envio de arquivos."
+
+#: audio.module:602
+msgid "The title can use the file's metadata. You can use the tokens listed below to insert information into the title. <strong>Note:</strong> the node title is escaped so it is safe to use the -raw tokens."
+msgstr "O título pode usar metadados dos arquivos. Você pode usar os tokens listados abaixo para inserir informação no título. <strong>Atenção</strong> o título do nó é escapado; logo é seguro utilizar tokens brutos - raw."
+
+#: audio.module:606
+msgid "Token list"
+msgstr "Lista de tokens"
+
+#: audio.module:610
+msgid "This is a list of the tokens that can be used in the title of audio nodes."
+msgstr "Essa é uma lista de tokens que podem ser utilizados no título dos nós de áudio."
+
+#: audio.module:638
+msgid "Audio File Info"
+msgstr "Informação do arquivo de áudio"
+
+#: audio.module:665
+msgid "Current File"
+msgstr "Arquivo atual"
+
+#: audio.module:666
+msgid "No file is attached."
+msgstr "Nenhum arquivo está anexado."
+
+#: audio.module:687
+msgid "The format is hours:minutes:seconds."
+msgstr "O formato é horas:minutos:segundos."
+
+#: audio.module:699
+msgid "Stereo"
+msgstr "Estéreo"
+
+#: audio.module:699
+msgid "Mono"
+msgstr "Mono"
+
+#: audio.module:710
+msgid "Constant"
+msgstr "Constante"
+
+#: audio.module:710
+msgid "Variable"
+msgstr "Variável"
+
+#: audio.module:717
+msgid "Play count"
+msgstr "Contagem de reproduções"
+
+#: audio.module:722
+msgid "Download count"
+msgstr "Contador de downloads"
+
+#: audio.module:739
+msgid "Add a new audio file"
+msgstr "Adicionar um novo arquivo de áudio"
+
+#: audio.module:739
+msgid "Replace this with a new file"
+msgstr "Substituir o atual por um novo arquivo"
+
+#: audio.module:740
+msgid "Click \"Browse...\" to select an audio file to upload. Only files with the following extensions are allowed: %allowed-extensions."
+msgstr "Clique em \"Navegar...\" para selecionar um arquivo de áudio para subir. Apenas arquivos com a seguinte extensão são permtidos: %allowed-extensions."
+
+#: audio.module:741
+msgid "<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize."
+msgstr "<strong>ATENÇÃO:</strong> a atual configuração do PHP limita os envios a %maxsize."
+
+#: audio.module:745
+msgid "Allow file downloads."
+msgstr "Permitir download de arquivos."
+
+#: audio.module:747
+msgid "If checked, a link will be displayed allowing visitors to download this audio file on to their own computer."
+msgstr "Se marcado, um link será exibido permitindo visitantes baixarem esse arquivo de áudio para seus computadores."
+
+#: audio.module:748
+msgid "<strong>WARNING:</strong> even if you leave this unchecked, clever users will be able to find a way to download the file. This just makes them work a little harder to find the link."
+msgstr "<strong>ATENÇÃO:</strong> mesmo se você deixar essa caixa desmarcada, usuários/as inteligentes podem encontrar uma forma de baixar o arquivo. Isso apenas torna mais difícil para que possam encontrar o link."
+
+#: audio.module:756
+msgid "Audio Metadata"
+msgstr "Metadados de Áudio"
+
+#: audio.module:863
+msgid "Track Number"
+msgstr "Faixa Número"
+
+#: audio.module:865
+msgid "Enter either a single number or fraction here. '1' means that this is the first track on the album, and '1/8' ."
+msgstr "Digite ou um número ou uma fração aqui. '1' quer dizer que essa é a primeira faixa do álbum e 1/8 ."
+
+#: audio.module:886
+msgid "Listen to @username's recent audio files"
+msgstr "Ouçã os arquivos de áudio mais recentes de @username"
+
+#: audio.module:889
+msgid "History"
+msgstr "Histórico"
+
+#: audio.module:902
+msgid "audio: Browse by"
+msgstr "áudio: Procurar por"
+
+#: audio.module:917
+msgid "Browse for audio by"
+msgstr "Procurar áudio por"
+
+#: audio.module:1012
+msgid "Browse by"
+msgstr "Procurar por"
+
+#: audio.module:1015
+msgid "@tag"
+msgstr "@tag"
+
+#: audio.module:1155
+msgid "Click to play"
+msgstr "Clique para tocar"
+
+#: audio.module:1540
+msgid "Audio node @tag tag value."
+msgstr "Valor da tag @tag do nó de áudio."
+
+#: audio.module:1541
+msgid "Audio node @tag tag value. WARNING - raw user input."
+msgstr "Valor da tag @tag do nó de áudio. ATENÇAO - entrada bruta de usuário (raw)"
+
+#: audio.module:1545
+msgid "Audio node formatted file length information."
+msgstr "Informação da duração do arquivo de áudio formatado."
+
+#: audio.module:1546
+msgid "Audio node formatted file format information."
+msgstr "Informação do formato do arquivo de áudio formatado."
+
+#: audio.module:1549
+msgid "Audio node sample rate, integer e.g. 44100."
+msgstr "Taxa de amostragem do nó de áudio, inteiro ex: 44100"
+
+#: audio.module:1550
+msgid "Audio node channels, e.g. mono, stereo."
+msgstr "Canais do nó de áudio, ex: mono, estéreo"
+
+#: audio.module:1551
+msgid "Audio node bitrate, integer e.g. 19200."
+msgstr "Taxa de bits do nó de áudio, inteiro, ex: 19200"
+
+#: audio.module:1552
+msgid "Audio node bitrate encoding mode, e.g. vbr, cbr."
+msgstr "Modo de codificação da taxa de bits, ex: vbr, cbr."
+
+#: audio.module:1553
+msgid "Audio node play time, minutes:seconds."
+msgstr "Duração do nó de áudio, minutos:segundos."
+
+#: audio.module:1554
+msgid "Audio node file format, e.g. mp3, ogg"
+msgstr "Formato do nó de áudio, ex: mp3, ogg"
+
+#: audio.module:1555
+msgid "Audio node original, uploaded file name."
+msgstr "Nó de áudio original, nome do arquivo que foi enviado."
+
+#: audio.module:1556
+msgid "Audio node file path."
+msgstr "Caminho do nó de áudio."
+
+#: audio.module:1557
+msgid "Audio node MIME type."
+msgstr "Tipo MIME do nó de áudio."
+
+#: audio.module:1558
+msgid "Audio node file size, in bytes."
+msgstr "Tamanho do arquivo do nó de áudio, em bytes."
+
+#: audio.module:1561
+msgid "Audio node player."
+msgstr "Tocador do nó áudio."
+
+#: audio.module:1562
+msgid "Audio node play URL."
+msgstr "URL para tocar o nó de áudio."
+
+#: audio.module:1563
+msgid "Audio node download URL."
+msgstr "URL para download do nó de áudio."
+
+#: audio.module:237
+msgid "administer audio"
+msgstr "administrar áudio"
+
+#: audio.module:237
+msgid "create audio"
+msgstr "criar áudio"
+
+#: audio.module:237
+msgid "edit own audio"
+msgstr "editar os próprios áudios"
+
+#: audio.module:238
+msgid "play audio"
+msgstr "tocar áudio"
+
+#: audio.module:238
+msgid "download audio"
+msgstr "baixar áudio"
+
+#: audio.module:238
+msgid "view download stats"
+msgstr "ver estatísticas de download"
+
+#: audio.module:53
+msgid "Audio settings"
+msgstr "Configurações de áudio"
+
+#: audio.module:54
+msgid "Change settings for the audio module."
+msgstr "Alterar configurações do módulo de áudio"
+
+#: audio.module:66
+msgid "Metadata tags"
+msgstr "Tags de metadados"
+
+#: audio.module:74
+msgid "Players"
+msgstr "Tocadores"
+
+#: audio.module:88
+msgid "Browse by..."
+msgstr "Procurar por..."
+
+#: audio.module:94
+msgid "Audio by @tag"
+msgstr "Áudio por @tag"
+
+#: audio.module:102
+msgid "Audio by @tag @value"
+msgstr "Áudio por @tag @value"
+
+#: audio.module:0
+msgid "audio"
+msgstr "áudio"
+
+#: audio.install:30
+msgid "Main audio table."
+msgstr "Tabela de áudio principal."
+
+#: audio.install:131
+msgid "Extended data about audio files."
+msgstr "Dados extendidos sobre os arquivos de áudio."
+
+#: audio.install:372
+msgid "The audio module requires that the <a href=\"http://drupal.org/project/token\">token module</a> be installed. You should install it as soon as possible."
+msgstr "O módulo de áudio requer que o <a href=\"http://drupal.org/project/token\">módulo token</a> seja instalado. Você deve instalá-lo assim que possível."
+
+#: audio.info:0
+msgid "Allows you to upload and playback audio files."
+msgstr "Permite que você suba e toque arquivos áudio."
+
+#: audio.admin.inc:197 images/audio_images.module:128
+msgid "Delete"
+msgstr "Apagar"
+
+#: audio.theme.inc:26 audio.module:685 getid3/audio_getid3.module:74
+msgid "Length"
+msgstr "Duração"
+
+#: audio.theme.inc:27 audio.module:674 getid3/audio_getid3.module:64
+msgid "Format"
+msgstr "Formato"
+
+#: audio.module:680 getid3/audio_getid3.module:69
+msgid "File Size"
+msgstr "Tamanho do arquivo"
+
+#: audio.module:691 getid3/audio_getid3.module:79
+msgid "Sample rate"
+msgstr "Taxa de amostragem"
+
+#: audio.module:697 getid3/audio_getid3.module:84
+msgid "Channel mode"
+msgstr "Modo de canais"
+
+#: audio.module:703 getid3/audio_getid3.module:89
+msgid "Bitrate"
+msgstr "Taxa de bits"
+
+#: audio.module:708 getid3/audio_getid3.module:94
+msgid "Bitrate mode"
+msgstr "Modo da taxa de bits"
+
+#: contrib/attach/audio_attach.module:71 contrib/feeds/audio_feeds.module:38
+msgid "Disabled"
+msgstr "Desabilitado"
+
+#: contrib/attach/audio_attach.module:71 contrib/feeds/audio_feeds.module:38
+msgid "Enabled"
+msgstr "Habilitado"
+
+#: players/1pixelout.inc:7
+msgid "1pixelout Flash player"
+msgstr "Tocador Flash 1pixelout"
+
+#: players/1pixelout.inc:8
+msgid "Written by Martin Laine as part of the Wordpress Audio Player plugin."
+msgstr "Escrito por Martin Laine como parte do plugin de tocador de Áudio do Wordpress."
+
+#: players/1pixelout.inc:9
+msgid "http://www.1pixelout.net/code/audio-player-wordpress-plugin/"
+msgstr "http://www.1pixelout.net/code/audio-player-wordpress-plugin/"
+
+#: players/button.inc:7
+msgid "XSPF Web Music Player - Button"
+msgstr "Tocador Web XSPF - Botão"
+
+#: players/button.inc:8
+msgid "Cute button player..."
+msgstr "Tocador de botão bonito..."
+
+#: players/button.inc:9 players/xspf_extended.inc:9 players/xspf_slim.inc:9
+msgid "http://musicplayer.sourceforge.net/"
+msgstr "http://musicplayer.sourceforge.net/"
+
+#: players/xspf_extended.inc:7
+msgid "XSPF Web Music Player - Extended"
+msgstr "Tocador Web XSPF - Extendido"
+
+#: players/xspf_extended.inc:8
+msgid "Extended version 0.2.3"
+msgstr "Versão extendida 0.2.3"
+
+#: players/xspf_slim.inc:7
+msgid "XSPF Web Music Player - Slim"
+msgstr "Tocador de Música Web XSPF - Enxuto"
+
+#: players/xspf_slim.inc:8
+msgid "Slim version 0.2.3"
+msgstr "Versão enxuta 0.2.3"

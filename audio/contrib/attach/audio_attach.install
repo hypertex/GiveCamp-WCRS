@@ -1,0 +1,173 @@
+<?php
+// $Id: audio_attach.install,v 1.7 2008/12/21 23:21:19 drewish Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function audio_attach_install() {
+  drupal_load('module', 'content');
+  content_notify('install', 'audio_attach');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function audio_attach_uninstall() {
+  drupal_load('module', 'content');
+  content_notify('uninstall', 'audio_attach');
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function audio_attach_enable() {
+  drupal_load('module', 'content');
+  content_notify('enable', 'audio_attach');
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function audio_attach_disable() {
+  drupal_load('module', 'content');
+  content_notify('disable', 'audio_attach');
+}
+
+/**
+ * Implementation of hook_update_last_removed().
+ */
+function audio_attach_update_last_removed() {
+  return 1;
+}
+
+/**
+ * Create a CCK nodereference field and migrate the data to it.
+ */
+function audio_attach_update_6000() {
+  // Make sure they've enabled CCK
+  if (!drupal_load('module', 'content') || !drupal_load('module', 'nodereference') || !function_exists('content_check_update')) {
+    $ret['#abort'] = array('success' => FALSE, 'query' => t('Audio Attach now requires CCK be installed. Some updates are still pending.<br/>Please re-run the update script.'));
+    return $ret;
+  }
+  if ($abort = content_check_update('audio_attach')) {
+    return $abort;
+  }
+
+  // Need to load the CCK include file where content_field_instance_create()
+  // is defined.
+  module_load_include('inc', 'content', 'includes/content.crud');
+
+  // var_export(content_fields('field_audio_attach', 'story'));
+  $field = array (
+    'field_name' => 'field_audio_attach',
+    'display_settings' =>
+    array (
+      'weight' => '31',
+      'parent' => '',
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'audio_attach',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'audio_attach',
+        'exclude' => 0,
+      ),
+      4 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      2 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      3 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'nodereference',
+    'required' => '0',
+    'multiple' => '1',
+    'db_storage' => '0',
+    'module' => 'nodereference',
+    'active' => '1',
+    'locked' => '0',
+    'columns' =>
+    array (
+      'nid' =>
+      array (
+        'type' => 'int',
+        'unsigned' => true,
+        'not null' => false,
+      ),
+    ),
+    'referenceable_types' =>
+    array (
+      'audio' => 'audio',
+    ),
+    'advanced_view' => '--',
+    'advanced_view_args' => '',
+    'widget' =>
+    array (
+      'autocomplete_match' => 'contains',
+      'default_value' =>
+      array (
+        0 =>
+        array (
+          'nid' => NULL,
+          '_error_element' => 'default_value_widget][field_audio_attach][0][nid][nid',
+        ),
+      ),
+      'default_value_php' => NULL,
+      'label' => 'Attached audio files',
+      'weight' => '31',
+      'description' => '',
+      'type' => 'nodereference_autocomplete',
+      'module' => 'nodereference',
+    ),
+  );
+
+  // Now create the fields for each node type that audio_attach is enabled on.
+  foreach (node_get_types() as $type) {
+    if (variable_get('audio_attach_'. $type->type, 0)) {
+      $field['type_name'] = $type->type;
+      content_field_instance_create($field);
+    }
+  }
+
+  // Now the tricky part is to migrate the data...
+  // GREAT BIG ASSUMPTION: We created the field to accept unlimited values so
+  // it should have $field['db_storage'] == CONTENT_DB_STORAGE_PER_FIELD for
+  // all instances of the field. If not this code will probably not work right.
+  $db_info = content_database_info($field);
+  $table = $db_info['table'];
+  $column = $db_info['columns']['nid']['column'];
+
+  $ret[] = update_sql("INSERT INTO {$table} (nid, vid, delta, $column) SELECT n.nid, n.vid, a.weight, a.aid FROM {audio_attach} a INNER JOIN {node} n ON a.nid = n.nid");
+
+
+  // Remove the old variables.
+  foreach (node_get_types() as $type) {
+#    variable_del('audio_attach_'. $type);
+  }
+
+  // And drop the old table.
+#  db_drop_table($ret, 'audio_attach');
+
+  return $ret;
+}

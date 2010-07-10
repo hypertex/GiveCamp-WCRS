@@ -1,0 +1,178 @@
+<?php
+// $Id: audio_playlist.module,v 1.8 2008/10/02 18:43:14 drewish Exp $
+
+/**
+ * @file
+ * This module provides a quick method of adding audio files to other nodes (that allow audio attachments).
+ */
+
+
+/**
+ * Implementation of hook_help().
+ */
+function audio_playlist_help($section, $arg) {
+  switch ($section) {
+    case 'admin/help#audio_playlist':
+      return t('This module provides a quick method of adding audio files to other nodes (that allow audio attachments).');
+  }
+}
+
+
+/**
+ * Implementation of hook_link().
+ */
+function audio_playlist_link($type, $node = NULL, $teaser = FALSE) {
+  global $base_url;
+  global $user;
+
+  $links = array();
+  if ($node->type == 'audio') {
+    if ((node_access('update', $node) || user_access('attach any existing audio file')) && (user_access('attach audio to own playlists') || user_access('attach audio to any playlist'))) {
+      $links['audio_playlist_add_link'] = array(
+         'title' => t('Add to playlist'),
+         'href' => "audio_playlist/$node->nid",
+         'query' => 'destination='. $_GET['q'],
+         'attributes' => array('title' => t('Add to playlist')),
+      );
+    }
+  }
+
+  return $links;
+}
+
+/**
+ *  Implementation of hook_perm
+ */
+function audio_playlist_perm() {
+  return array(
+    'attach audio to own playlists',
+    'attach audio to any playlist',
+  );
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function audio_playlist_menu() {
+  $items = array();
+
+  $items['audio_playlist/%node'] = array(
+    'title' => 'Add audio file to a playlist',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('audio_playlist_add_form', 1),
+    'access callback' => 'audio_playlist_access',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback to for the add playlist form.
+ */
+function audio_playlist_access() {
+  return user_access('attach audio to own playlists') || user_access('attach audio to any playlist');
+}
+
+function audio_playlist_add_form($node = NULL) {
+  // make sure things are properly setup
+  if (!audio_playlist_get_playlist_types()) {
+    drupal_set_message("At least one content type must have <a href='!url'>audio attachments enabled</a> for playlists to work.", array('!url' => url('admin/content/types')));
+    return;
+  }
+
+  // First try to pass the audio file through the URL, if that fails show a select box to choose an audio file.
+  if (is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    if ($node->type == 'audio') {
+      $form['audio_playlist']['aid'] = array(
+        '#type' => 'value',
+        '#value' => $node->nid,
+      );
+      $form['audio_playlist']['aid_name'] = array(
+        '#type' => 'item',
+        '#title' => t("Audio file"),
+        '#value' => $node->title,
+      );
+    }
+    else {
+      drupal_set_message("Sorry, but only audio files can be added to a playlist.");
+    }
+  }
+  else {
+    // show a select box if audio isn't passed through URL
+    $form['audio_playlist']['aid'] = array(
+      '#type' => 'select',
+      '#title' => t('Select audio file'),
+      '#options' => audio_attach_get_audio_nodes(),
+      '#description' => t('Choose an audio file to add to a playlist.')
+    );
+  }
+
+  $form['audio_playlist']['playlists'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Add to playlist(s)'),
+    '#options' => audio_playlist_get_playlist_nodes(),
+    '#description' => t('Select which playlists you want to add this file to.'),
+  );
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Add to playlist'));
+
+  return $form;
+}
+
+function audio_playlist_add_form_submit($form, &$form_state) {
+  if ($form_state['values']['aid'] != 0) {
+    foreach ($form_state['values']['playlists'] as $nid => $checked) {
+      if ($checked) {
+        audio_attach_add_child($nid, $form_state['values']['aid']);
+      }
+    }
+    drupal_set_message("Added to playlist.");
+  }
+  else {
+    drupal_set_message("Please select an audio file.", "error");
+  }
+}
+
+/**
+ * Fetch an array of all candidate referenced nodes, for use in presenting the selection form to the user.
+ */
+function audio_playlist_get_playlist_nodes() {
+  global $user;
+
+  $playlist_types = audio_playlist_get_playlist_types();
+  if (empty($playlist_types)) {
+    return FALSE;
+  }
+  $types = array();
+  foreach ($playlist_types as $type) {
+    $types[]= "type = '$type' ";
+  }
+  $types = implode('OR ', $types);
+  $sql = "SELECT n.nid, n.title FROM {node} n WHERE n.status=1 AND $types ";
+  $sql .= !user_access("attach audio to any playlist") ? "AND n.uid = $user->uid " : "";
+  $sql .= "ORDER BY n.sticky DESC, n.title ASC";
+  $rows = array();
+  $result = db_query(db_rewrite_sql($sql));
+  while ($row = db_fetch_object($result)) {
+    $node = node_load($row->nid);
+    $rows[$node->nid] = $node->title ."<small> " . l("(i)", 'node/'. $node->nid, array("target" => "_blank")) ."</small>";
+  }
+  return $rows;
+}
+
+/**
+ *  Return the content types which have audio_attach enabled.
+ */
+function audio_playlist_get_playlist_types() {
+  $node_types = node_get_types();
+  $playlist_types = array();
+  foreach ($node_types as $type => $name) {
+    if (variable_get('audio_attach_'. $type, 0)) {
+      $playlist_types[] = $type;
+    }
+  }
+  return $playlist_types;
+}
+
