@@ -153,10 +153,38 @@ function audio_ahah() {
   }
 
   $form_state = array('values' => $_POST);
-  form_set_cache('audio_node_form', $cached_form, $form_state);
+  $form_build_id = $_POST['form_build_id'];
+ 
+  $validators = array(
+    'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
+  );
+  if ($file = file_save_upload('audio_upload', $validators)) {
+    //we need to add the the audio file to the form.
+    $form_state['values']['audio']['file'] = $file;
+    $node = (object) $form_state['values'];
+
+    $cached_form['audio']['file'] = array(
+      '#type' => 'value',
+      '#value' => $file,
+    );
+    $cached_form['audio']['display_filepath']['#value'] = $file->filepath;
+    unset($cached_form['audio']['audio_upload']);
+    unset($cached_form['audio']['attach']);
+    $form_state['storage']['node'] = $node;
+    $message = t('<div class="box">File was successfully attached.</div>');
+  }
+
+  // Unfortunately we HAVE to use the old way because the new way
+  // plain, simply doesn't work. And the old way doesn't work, and
+  // doesn't save form_state or form to the cache so that the validate
+  // submit and node validate functions will recognize the new values.
+  //drupal_process_form('audio_node_form', $cached_form, $form_state);
+  //$form = drupal_rebuild_form('audio_node_form', $form_state, $node, $form_build_id);
+  form_set_cache($form_build_id, $cached_form, $form_state);
+  drupal_alter('form', $cached_form, array(), 'audio_ahah');
   $form = form_builder('audio_node_form', $cached_form, $form_state);
 
-  print drupal_to_js(array('status' => TRUE, 'data' => $message ));
+  print drupal_to_js(array('status' => TRUE, 'data' => $message . drupal_render($form['audio'])));
   exit();
 }
 
@@ -490,7 +518,7 @@ function audio_view(&$node, $teaser = FALSE, $page = FALSE) {
  */
 function audio_validate(&$node, &$form) {
   if (!isset($node->audio['file']->filepath)) {
-    form_set_error('audio_upload', t("A file must be provided. If you tried uploading a file, make sure it's less than the upload size limit."));
+      form_set_error('audio_upload', t("A file must be provided. If you tried uploading a file, make sure it's less than the upload size limit."));
   }
 
   if (empty($form_state['values']['title_format'])) {
@@ -691,6 +719,8 @@ function audio_form(&$node, &$form_state) {
   $form['audio'] = array(
     '#type' => 'fieldset',
     '#title' => t('Audio File Info'),
+    '#prefix' => '<div id="audio-file-info-wrapper">',
+    '#suffix' => '</div>',
     '#collapsible' => TRUE,
     '#weight' => -1,
     '#tree' => TRUE,
@@ -805,8 +835,8 @@ function audio_form(&$node, &$form_state) {
     '#suffix' => '</div>',
     '#ahah' => array(
       'path' => 'audio/ahah',
-      'wrapper' => 'edit-audio-attach-wrapper',
-      'method' => 'append',
+      'wrapper' => 'audio-file-info-wrapper',
+      'method' => 'replace',
       'progress' => array(
 //        'url' => 'audio/progress/' . $key,
         'path' => 'audio/progress/' . $key,
@@ -879,18 +909,20 @@ function theme_audio_file_form($form) {
  * Node submit handler
  */
 function audio_node_form_validate($form, &$form_state) {
-  // Check for an upload.
-  $validators = array(
-    'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
-  );
-  if ($file = file_save_upload('audio_upload', $validators)) {
-    $node = (object) $form_state['values'];
-    $node->audio = array(
-      'play_count' => 0,
-      'download_count' => 0,
-      'downloadable' => (bool) $form_state['values']['audio']['downloadable'],
-      'file' => $file,
+  if (!isset($form_state['values']['audio']['file']->filename)) {
+    // Check for an upload.
+    $validators = array(
+      'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
     );
+    if ($file = file_save_upload('audio_upload', $validators)) {
+      $node = (object) $form_state['values'];
+      $node->audio = array(
+        'play_count' => 0,
+        'download_count' => 0,
+        'downloadable' => (bool) $form_state['values']['audio']['downloadable'],
+        'file' => $file,
+      );
+    }
 
     // Allow other modules to modify the node.
     audio_invoke_audioapi('upload', $node);
@@ -902,7 +934,13 @@ function audio_node_form_validate($form, &$form_state) {
     $form_state['values']['audio'] = $node->audio;
     $form_state['values']['audio_tags'] = $node->audio_tags;
     $form_state['values']['audio_images'] = $node->audio_images;
-  }
+    }
+    else {
+      $node = $form_state['storage']['node'];
+
+      // Allow other modules to modify the node.
+      audio_invoke_audioapi('upload', $node);
+    }
 }
 
 /**
