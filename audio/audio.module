@@ -1,5 +1,5 @@
 <?php
-// $Id: audio.module,v 1.159 2009/11/29 19:45:22 drewish Exp $
+// $Id: audio.module,v 1.158 2009/11/25 19:30:45 drewish Exp $
 
 /**
  * Implementation of hook_help().
@@ -156,7 +156,7 @@ function audio_ahah() {
   form_set_cache('audio_node_form', $cached_form, $form_state);
   $form = form_builder('audio_node_form', $cached_form, $form_state);
 
-  print drupal_to_js(array('status' => TRUE, 'data' => $message ));
+  print drupal_to_js(array('status' => TRUE, 'data' => theme('status_messages')));
   exit();
 }
 
@@ -169,14 +169,47 @@ function audio_progress($key) {
     'percentage' => -1,
   );
 
-  $status = uploadprogress_get_info($key);
-
-  if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
-    $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
-    $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+  $implementation = audio_progress_implementation();
+  if ($implementation == 'uploadprogress') {
+  	$template = ini_get("uploadprogress.file.filename_template");
+  	$filename = preg_replace("/%s/", $key, $template);
+  	$status = uploadprogress_get_info($key);
+  	if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
+    	$progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+		$progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+	}
   }
-
+  elseif ($implementation == 'apc') {
+	//TODO: 
+	//apc implementation untested. We don't have a working APC-enabled PHP installation to test with
+    $status = apc_fetch('upload_' . $key);
+    if (isset($status['current']) && !empty($status['total'])) {
+      $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['current']), '@total' => format_size($status['total'])));
+      $progress['percentage'] = round(100 * $status['current'] / $status['total']);
+    }
+  }
   drupal_json($progress);
+}
+
+/**
+ * Determine which upload progress implementation to use, if any available.
+ * 	Code borrowed from the filefield module.
+ */
+function audio_progress_implementation() {
+  static $implementation;
+  if (!isset($implementation)) {
+    $implementation = FALSE;
+
+    // We prefer the PECL extension uploadprogress because it supports multiple
+    // simultaneous uploads. APC only supports one at a time.
+    if (extension_loaded('uploadprogress')) {
+      $implementation = 'uploadprogress';
+    }
+    elseif (extension_loaded('apc') && ini_get('apc.rfc1867')) {
+      $implementation = 'apc';
+    }
+  }
+  return $implementation;
 }
 
 /**
@@ -796,6 +829,15 @@ function audio_form(&$node, &$form_state) {
       . t('<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize.', array('%maxsize' => format_size(file_upload_max_size()))),
   );
 
+  //kill Kenny
+  $progress_implementation = audio_progress_implementation();
+  if ($progress_implementation) {
+	$progress_type = 'bar';
+  }
+  else {
+	$progress_type = 'throbber';	
+  }
+
   //kill radcliffe 
   $form['audio']['attach'] = array(
     '#type' => 'submit',
@@ -808,9 +850,8 @@ function audio_form(&$node, &$form_state) {
       'wrapper' => 'edit-audio-attach-wrapper',
       'method' => 'append',
       'progress' => array(
-//        'url' => 'audio/progress/' . $key,
         'path' => 'audio/progress/' . $key,
-        'type' => 'bar',
+        'type' => $progress_type,
         'message' => t('Please wait...'),
         'interval' => 300,
       ),
@@ -825,6 +866,8 @@ function audio_form(&$node, &$form_state) {
     '#description' => t('If checked, a link will be displayed allowing visitors to download this audio file on to their own computer.') .'<br />'
       . t('<strong>WARNING:</strong> even if you leave this unchecked, clever users will be able to find a way to download the file. This just makes them work a little harder to find the link.'),
   );
+
+
 
 
   // If we've got a file, add the fields for editing meta data.
@@ -844,6 +887,7 @@ function audio_form(&$node, &$form_state) {
 
   $form['#validate'][] = 'audio_node_form_validate';
   $form['#submit'][] = 'audio_node_form_submit';
+
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
 
   return $form;
@@ -1047,7 +1091,7 @@ function audio_get_tag_settings() {
   $defaults = array(
     'artist' => array('autocomplete' => 1, 'required' => 1, 'hidden' => 0,
       'writetofile' => 1, 'browsable' => 1, 'weight' => -2),
-    'title'  => array('autocomplete' => 0, 'required' => 1, 'hidden' => 0,
+    'title'  => array('autocomplete' => 1, 'required' => 1, 'hidden' => 0,
        'writetofile' => 1, 'browsable' => 1, 'weight' => -2),
     'album'  => array('autocomplete' => 1, 'required' => 0, 'hidden' => 0,
        'writetofile' => 1, 'browsable' => 1, 'weight' => -1),
@@ -1123,7 +1167,7 @@ function _audio_player_build_list() {
       if (isset($result) && is_array($result)) {
         foreach (array_keys($result) as $player) {
           // Keep track of the file where this player was found.
-          $result[$player]['file'] = $file->basename;
+          $result[$player]['file'] = $file->basename; 
         }
         $players_name = array_merge($players_name, $result);
       }
