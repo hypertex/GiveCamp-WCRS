@@ -184,11 +184,7 @@ function audio_ahah() {
   drupal_alter('form', $cached_form, array(), 'audio_ahah');
   $form = form_builder('audio_node_form', $cached_form, $form_state);
 
-<<<<<<< HEAD:audio/audio.module
   print drupal_to_js(array('status' => TRUE, 'data' => $message . drupal_render($form['audio'])));
-=======
-  print drupal_to_js(array('status' => TRUE, 'data' => theme('status_messages')));
->>>>>>> 0765c1fcfb6ffced6993047fa18abe8d2a6378e2:audio/audio.module
   exit();
 }
 
