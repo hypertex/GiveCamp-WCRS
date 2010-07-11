@@ -172,6 +172,9 @@ function audio_ahah() {
     unset($cached_form['audio']['attach']);
     $form_state['storage']['node'] = $node;
     $message = t('<div class="box">File was successfully attached.</div>');
+
+    $cached_form['#submit'] = array('audio_node_form_submit');
+    $form_state['rebuild'] = FALSE;
   }
 
   // Unfortunately we HAVE to use the old way because the new way
@@ -616,6 +619,8 @@ function audio_load($node) {
 function audio_insert(&$node) {
   file_move($node->audio['file']->filepath, audio_get_directory(), FILE_EXISTS_RENAME);
   _audio_save($node);
+  //@todo for some reason form_state['redirect'] isn't working
+  drupal_goto('node/' . $node->nid);
 }
 
 /**
@@ -639,6 +644,8 @@ function audio_update(&$node) {
   }
 
   _audio_save($node);
+  //@todo for some reason form_state['redirect'] isn't working
+  drupal_goto('node/' . $node->nid);
 }
 
 /**
@@ -665,10 +672,12 @@ function _audio_save(&$node) {
 
   // Save the new tags.
   $allowed_tags = audio_get_tags_allowed();
-  foreach ($node->audio_tags as $tag => $value) {
-    if (in_array($tag, $allowed_tags) && $value) {
-      $metadata = array('vid' => $node->vid, 'tag' => $tag, 'value' => $value, 'clean' => audio_clean_tag($value));
-      drupal_write_record('audio_metadata', $metadata);
+  if (!empty($node->audio_tags)) {
+    foreach ($node->audio_tags as $tag => $value) {
+      if (in_array($tag, $allowed_tags) && $value) {
+        $metadata = array('vid' => $node->vid, 'tag' => $tag, 'value' => $value, 'clean' => audio_clean_tag($value));
+        drupal_write_record('audio_metadata', $metadata);
+      }
     }
   }
 }
@@ -886,7 +895,6 @@ function audio_form(&$node, &$form_state) {
         'interval' => 300,
       ),
     ),
-    '#submit' => array('node_form_submit_build_node'),
   );
 
   $form['audio']['downloadable'] = array(
@@ -984,6 +992,10 @@ function audio_node_form_validate($form, &$form_state) {
 
       // Allow other modules to modify the node.
       audio_invoke_audioapi('upload', $node);
+
+      $form_state['values']['audio'] = $node->audio;
+      $form_state['values']['audio_tags'] = $node->audio_tags;
+      $form_state['values']['audio_images'] = $node->audio_images;
     }
 }
 
