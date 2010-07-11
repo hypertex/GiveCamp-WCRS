@@ -899,7 +899,7 @@ function audio_form(&$node, &$form_state) {
  */
 function theme_audio_file_form($form) {
   // List of elements to leave out of the table.
-  $skip_list = array('audio_upload' => 1, 'downloadable' => 1);
+  $skip_list = array('audio_upload' => 1, 'downloadable' => 1, 'attach' => 1);
 
   $rows = array();
   foreach (element_children($form) as $key) {
