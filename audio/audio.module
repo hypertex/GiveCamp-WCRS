@@ -154,7 +154,7 @@ function audio_ahah() {
 
   $form_state = array('values' => $_POST);
   $form_build_id = $_POST['form_build_id'];
-	$cached_form['#post'] = $_POST;
+  $cached_form['#post'] = $_POST;
  
   $validators = array(
     'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
