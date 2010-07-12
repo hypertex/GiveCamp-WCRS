@@ -865,7 +865,7 @@ function audio_form(&$node, &$form_state) {
     '#tree' => FALSE,
     '#type' => 'file',
     '#title' => empty($node->audio['file']->filename) ? t('Add a new audio file') : t('Replace this with a new file'),
-    '#attributes' => array('audio_accept' => $extensions, 'size' => '40'),
+    '#attributes' => array('audio_accept' => $extensions),
     '#description' => t('Click "Browse..." to select an audio file to upload. Only files with the following extensions are allowed: %allowed-extensions.', array('%allowed-extensions' => $extensions)) .'<br />'
       . t('<strong>NOTE:</strong> the current PHP configuration limits uploads to %maxsize.', array('%maxsize' => format_size(file_upload_max_size()))),
   );
