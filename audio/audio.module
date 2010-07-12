@@ -154,6 +154,7 @@ function audio_ahah() {
 
   $form_state = array('values' => $_POST);
   $form_build_id = $_POST['form_build_id'];
+	$cached_form['#post'] = $_POST;
  
   $validators = array(
     'file_validate_extensions' => array(variable_get('audio_allowed_extensions', 'mp3 wav ogg')),
@@ -181,16 +182,14 @@ function audio_ahah() {
   }
 
   // Unfortunately we HAVE to use the old way because the new way
-  // plain, simply doesn't work. And the old way doesn't work, and
-  // doesn't save form_state or form to the cache so that the validate
-  // submit and node validate functions will recognize the new values.
+  // plain, simply doesn't work. 
   //drupal_process_form('audio_node_form', $cached_form, $form_state);
   //$form = drupal_rebuild_form('audio_node_form', $form_state, $node, $form_build_id);
   form_set_cache($form_build_id, $cached_form, $form_state);
   drupal_alter('form', $cached_form, array(), 'audio_ahah');
   $form = form_builder('audio_node_form', $cached_form, $form_state);
 
-  print drupal_to_js(array('status' => TRUE, 'data' => $message . drupal_render($form['audio'])));
+  print drupal_to_js(array('status' => TRUE, 'data' => drupal_render($form['audio'])));
   exit();
 }
 
@@ -989,17 +988,27 @@ function audio_node_form_validate($form, &$form_state) {
     $form_state['values']['audio'] = $node->audio;
     $form_state['values']['audio_tags'] = $node->audio_tags;
     $form_state['values']['audio_images'] = $node->audio_images;
-    }
-    else {
-      $node = $form_state['storage']['node'];
+  }
+  elseif (isset($form_state['storage']['node'])) {
+    $node = $form_state['storage']['node'];
 
-      // Allow other modules to modify the node.
-      audio_invoke_audioapi('upload', $node);
+    // Allow other modules to modify the node.
+    audio_invoke_audioapi('upload', $node);
 
-      $form_state['values']['audio'] = $node->audio;
-      $form_state['values']['audio_tags'] = $node->audio_tags;
-      $form_state['values']['audio_images'] = $node->audio_images;
-    }
+    $form_state['values']['audio'] = $node->audio;
+    $form_state['values']['audio_tags'] = $node->audio_tags;
+    $form_state['values']['audio_images'] = $node->audio_images;
+  }
+	else {
+    $node = (object) $form_state['values'];
+
+    // Allow other modules to modify the node.
+    audio_invoke_audioapi('upload', $node);
+
+    $form_state['values']['audio'] = $node->audio;
+    $form_state['values']['audio_tags'] = $node->audio_tags;
+    $form_state['values']['audio_images'] = $node->audio_images;
+  }
 }
 
 /**
